@@ -1,10 +1,13 @@
-import { Tabs } from "expo-router";
+import { Stack } from 'expo-router';
+import ThemeProvider from "./theme-context";
 
 export default function Layout() {
   return (
-    <Tabs>
-      <Tabs.Screen name="index" options={{ title: "Home" }} />
-      <Tabs.Screen name="top-tabs" options={{ title: "Top Tabs" }} />
-    </Tabs>
+    <ThemeProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
+      </Stack>
+    </ThemeProvider>
   );
 }
