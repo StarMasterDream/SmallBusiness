@@ -7,7 +7,8 @@ export default function TabsNavigator() {
       <Tabs.Screen 
         name="index" 
         options={{ 
-          title: "Home", 
+          title: "Главная",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
@@ -15,8 +16,9 @@ export default function TabsNavigator() {
       />
       <Tabs.Screen 
         name="profile" 
-        options={{ 
-          title: "Profile", 
+        options={{
+          headerShown: false,
+          title: "Профиль",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),

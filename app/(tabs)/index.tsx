@@ -18,12 +18,58 @@ const Tab = createMaterialTopTabNavigator();
 const generateData = () => Array.from({ length: 50 }, (_, index) => `Пример данных ${index + 1}`);
 
 export default function Index() {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [data] = useState(generateData());
   const { theme } = useTheme(); // Используем контекст темы
 
-  const onButtonPress = () => setModalVisible(true);
+  return (
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: { backgroundColor: theme === "light" ? "#6200ee" : "#333" },
+          tabBarLabelStyle: { color: "#fff" },
+          tabBarIndicatorStyle: { backgroundColor: "#ff9800" },
+        }}
+      >
+        <Tab.Screen name="ScreenA">
+          {() => <ScreenA data={data} theme={theme} />}
+        </Tab.Screen>
+        <Tab.Screen name="ScreenB">
+          {() => <Screen data={data} theme={theme} />}
+        </Tab.Screen>
+      </Tab.Navigator>
+    </View>
+  );
+}
+
+interface ScreenProps {
+  data: string[];
+  theme: string;
+}
+
+function Screen({ data, theme }: ScreenProps) {
+  return (
+    <FlatList
+      data={data}
+      keyExtractor={(item, index) => index.toString()}
+      contentContainerStyle={{ paddingBottom: 20 }}
+      renderItem={({ item }) => (
+        <Text
+          style={{
+            color: theme === "light" ? "#000" : "#fff",
+            fontSize: 16,
+            marginBottom: 8,
+          }}
+        >
+          {item}
+        </Text>
+      )}
+    />
+  );
+}
+
+function ScreenA({ data, theme }: ScreenProps) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const closeModal = () => {
     setModalVisible(false);
@@ -79,22 +125,24 @@ export default function Index() {
 
   return (
     <View style={styles.wrapper}>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: { backgroundColor: theme === "light" ? "#6200ee" : "#333" },
-          tabBarLabelStyle: { color: "#fff" },
-          tabBarIndicatorStyle: { backgroundColor: "#ff9800" },
-        }}
-      >
-        <Tab.Screen name="ScreenA">
-          {() => <Screen data={data} theme={theme} />}
-        </Tab.Screen>
-        <Tab.Screen name="ScreenB">
-          {() => <Screen data={data} theme={theme} />}
-        </Tab.Screen>
-      </Tab.Navigator>
+      <FlatList
+        data={data}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        renderItem={({ item }) => (
+          <Text
+            style={{
+              color: theme === "light" ? "#000" : "#fff",
+              fontSize: 16,
+              marginBottom: 8,
+            }}
+          >
+            {item}
+          </Text>
+        )}
+      />
 
-      <TouchableOpacity style={styles.floatingButton} onPress={onButtonPress}>
+      <TouchableOpacity style={styles.floatingButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
 
@@ -115,39 +163,11 @@ export default function Index() {
           <FlatList
             data={filteredData}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <Text style={styles.textItem}>{item}</Text>
-            )}
+            renderItem={({ item }) => <Text style={styles.textItem}>{item}</Text>}
           />
           <Button title="Закрыть" onPress={closeModal} />
         </View>
       </Modal>
     </View>
-  );
-}
-
-interface ScreenProps {
-  data: string[];
-  theme: string;
-}
-
-function Screen({ data, theme }: ScreenProps) {
-  return (
-    <FlatList
-      data={data}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={{ paddingBottom: 20 }}
-      renderItem={({ item }) => (
-        <Text
-          style={{
-            color: theme === "light" ? "#000" : "#fff",
-            fontSize: 16,
-            marginBottom: 8,
-          }}
-        >
-          {item}
-        </Text>
-      )}
-    />
   );
 }

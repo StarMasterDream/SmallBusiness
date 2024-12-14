@@ -15,8 +15,8 @@ export default function StackLayout() {
         <Stack.Screen
           name="settings"
           options={{
-            title: "Настройки", // Титул для экрана настроек
-            headerBackTitle: "", // Скрыть текст кнопки назад
+            title: "Настройки",
+            headerBackTitle: "назад",
           }}
         />
       </Stack>
