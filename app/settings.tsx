@@ -12,7 +12,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
       <Text style={styles.subtitle}>Theme</Text>
 
       <View style={styles.optionsContainer}>
@@ -44,11 +43,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9F9F9',
     padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   subtitle: {
     fontSize: 18,

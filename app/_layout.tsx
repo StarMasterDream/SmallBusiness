@@ -4,19 +4,20 @@ import ThemeProvider from "./theme-context";
 export default function StackLayout() {
   return (
     <ThemeProvider>
-      {/* Основной стек навигации */}
       <Stack>
-        {/* Вкладки */}
         <Stack.Screen
           name="(tabs)"
           options={{
-            headerShown: false, // Отключаем хедер на вкладках
+            headerShown: false,
+            headerBackButtonDisplayMode: "minimal"
           }}
         />
-        {/* Настройки */}
         <Stack.Screen
           name="settings"
-          options={{ title: "Настройки" }}
+          options={{
+            title: "Настройки", // Титул для экрана настроек
+            headerBackTitle: "", // Скрыть текст кнопки назад
+          }}
         />
       </Stack>
     </ThemeProvider>
