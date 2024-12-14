@@ -28,7 +28,8 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Это профиль</Text>
-      <Button title="Выйти" onPress={handleLogout} />
+      <Button title="Выйти" onPress={handleLogout}/>
+      <Button title="Выйти" onPress={handleLogout}/>
     </View>
   );
 }
