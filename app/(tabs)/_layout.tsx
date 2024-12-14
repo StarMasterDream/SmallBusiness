@@ -1,23 +1,27 @@
 import { Tabs } from "expo-router";
-import ThemeProvider from "../theme-context";
+import { Ionicons } from '@expo/vector-icons';
 
-export default function Layout() {
+export default function TabsNavigator() {
   return (
-    <ThemeProvider>
-      <Tabs>
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: "Home",
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-          }}
-        />
-      </Tabs>
-    </ThemeProvider>
+    <Tabs>
+      <Tabs.Screen 
+        name="index" 
+        options={{ 
+          title: "Home", 
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ),
+        }} 
+      />
+      <Tabs.Screen 
+        name="profile" 
+        options={{ 
+          title: "Profile", 
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ),
+        }} 
+      />
+    </Tabs>
   );
 }

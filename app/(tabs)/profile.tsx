@@ -1,35 +1,93 @@
-import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import { useTheme } from "../theme-context";
-import * as SecureStore from "expo-secure-store";
+import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { router } from "expo-router";
 
-const handleLogout = async () => {
-  await SecureStore.deleteItemAsync("user");
-  router.push("/login"); // Возврат на страницу авторизации
-};
-
-export default function Profile() {
-  const { theme } = useTheme();
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: theme === "light" ? "#ffffff" : "#000000",
-    },
-    text: {
-      color: theme === "light" ? "#000000" : "#ffffff",
-      fontSize: 16,
-    },
-  });
-
+export default function ProfileScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Это профиль</Text>
-      <Button title="Выйти" onPress={handleLogout}/>
-      <Button title="Выйти" onPress={handleLogout}/>
-    </View>
+    <ScrollView style={styles.container}>
+      {/* Профиль */}
+      <View style={styles.profileHeader}>
+        <Image
+          source={require('../../assets/images/adaptive-icon.png')}
+          style={styles.profileImage}
+        />
+        <Text style={styles.name}>Ян Греку</Text>
+        <TouchableOpacity style={styles.photoButton}>
+          <Ionicons name="camera-outline" size={16} color="#007AFF" />
+          <Text style={styles.photoButtonText}>Изменить фотографию</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Настройки профиля */}
+      <View style={styles.settingsSection}>
+        <TouchableOpacity style={styles.menuItem}>
+          <Ionicons name="person-outline" size={24} color="#FF2D55" />
+          <Text style={styles.menuText}>Мой профиль</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.lastMenuItem} onPress={() => router.push("/settings")}>
+          <MaterialIcons name="settings" size={24} color="#FF9500" />
+          <Text style={styles.menuText}>Настройки</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F2F2F7',
+  },
+  profileHeader: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    backgroundColor: '#FFF',
+    marginBottom: 10,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  name: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  photoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  photoButtonText: {
+    color: '#007AFF',
+    marginLeft: 5,
+  },
+  settingsSection: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    marginHorizontal: 10,
+    paddingVertical: 5,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5EA',
+  },
+  menuText: {
+    fontSize: 16,
+    marginLeft: 15,
+    flex: 1,
+  },
+  lastMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 0, // Убираем нижнюю границу
+  },
+});
