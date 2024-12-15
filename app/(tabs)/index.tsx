@@ -16,13 +16,11 @@ import { useTheme } from "../theme-context";
 
 const Tab = createMaterialTopTabNavigator();
 
-// Определяем интерфейс пропсов
 interface ScreenProps {
   data: string[];
   theme: string;
 }
 
-// Dummy data generator
 const generateData = () =>
   Array.from({ length: 50 }, (_, index) => `Пример данных ${index + 1}`);
 
@@ -53,7 +51,6 @@ export default function Index() {
   );
 }
 
-// Global styles
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -94,10 +91,10 @@ const styles = StyleSheet.create({
   },
 });
 
-// ScreenCheque component
 function ScreenCheque({ data }: ScreenProps) {
   return (
     <FlatList
+      style={{ flex: 1 }}
       data={data}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }: { item: string }) => (
@@ -107,7 +104,6 @@ function ScreenCheque({ data }: ScreenProps) {
   );
 }
 
-// ScreenBasket component
 function ScreenBasket({ data, theme }: ScreenProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -122,8 +118,9 @@ function ScreenBasket({ data, theme }: ScreenProps) {
   );
 
   return (
-    <View style={styles.wrapper}>
+    <View style={{ flex: 1 }}>
       <FlatList
+        style={{ flex: 1 }}
         data={filteredData}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }: { item: string }) => (
@@ -138,7 +135,6 @@ function ScreenBasket({ data, theme }: ScreenProps) {
         <Text style={{ color: "#fff", fontSize: 24 }}>+</Text>
       </TouchableOpacity>
 
-      {/* Оборачиваем модальное окно в SafeAreaView */}
       <Modal
         animationType="slide"
         transparent={false}
@@ -154,13 +150,14 @@ function ScreenBasket({ data, theme }: ScreenProps) {
             onChangeText={setSearchQuery}
           />
           <FlatList
+            style={{ flex: 1 }}
             data={filteredData}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }: { item: string }) => (
               <Text style={styles.textItem}>{item}</Text>
             )}
           />
-          <Button title="Close" onPress={closeModal} />
+          <Button title="закрыть" onPress={closeModal} />
         </SafeAreaView>
       </Modal>
     </View>
