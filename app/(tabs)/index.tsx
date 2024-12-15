@@ -124,7 +124,7 @@ function ScreenBasket({ data, theme }: ScreenProps) {
   });
 
   return (
-    <SafeAreaView style={styles.wrapper}>
+    <View style={styles.wrapper}>
       <FlatList
         data={data}
         keyExtractor={(item, index) => index.toString()}
@@ -168,6 +168,6 @@ function ScreenBasket({ data, theme }: ScreenProps) {
           <Button title="Закрыть" onPress={closeModal} />
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }

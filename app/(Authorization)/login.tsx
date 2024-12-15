@@ -16,7 +16,7 @@ const Login = () => {
         const { email: storedEmail, password: storedPassword } = JSON.parse(storedUser);
   
         if (email === storedEmail && password === storedPassword) {
-          router.push('/');
+          router.replace('/');
         } else {
           Alert.alert('Ошибка', 'Неверные данные.');
         }
@@ -46,7 +46,7 @@ const Login = () => {
         onChangeText={setPassword}
       />
       <Button title="Войти" onPress={handleLogin} />
-      <Button title="Регистрация" onPress={() => router.push('/register')} />
+      <Button title="Регистрация" onPress={() => router.replace('/register')} />
     </SafeAreaView>
   );
 };
