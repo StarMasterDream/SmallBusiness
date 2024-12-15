@@ -30,10 +30,10 @@ export default function Index() {
           tabBarIndicatorStyle: { backgroundColor: "#ff9800" },
         }}
       >
-        <Tab.Screen name="ScreenA">
+        <Tab.Screen name="Коржина">
           {() => <ScreenA data={data} theme={theme} />}
         </Tab.Screen>
-        <Tab.Screen name="ScreenB">
+        <Tab.Screen name="Чеки">
           {() => <Screen data={data} theme={theme} />}
         </Tab.Screen>
       </Tab.Navigator>
