@@ -21,16 +21,20 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   useEffect(() => {
     const loadTheme = async () => {
-      const storedTheme = await AsyncStorage.getItem("theme");
+      try {
+        const storedTheme = await AsyncStorage.getItem("theme");
         const systemTheme = Appearance.getColorScheme();
 
         if (storedTheme) {
-            setTheme(storedTheme);
-        } else if(systemTheme){
-            setTheme(systemTheme);
+          setTheme(storedTheme);
+        } else if (systemTheme) {
+          setTheme(systemTheme);
         } else {
-            setTheme('light')
+          setTheme("light");
         }
+      } catch (error) {
+        console.error("Failed to load theme:", error);
+      }
     };
 
     loadTheme();
@@ -39,7 +43,11 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const toggleTheme = async () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    await AsyncStorage.setItem("theme", newTheme);
+    try {
+      await AsyncStorage.setItem("theme", newTheme);
+    } catch (error) {
+      console.error("Failed to save theme:", error);
+    }
   };
 
   return (

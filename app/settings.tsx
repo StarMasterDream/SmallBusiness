@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Appearance } from 'react-native';
 import { useTheme } from './theme-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SettingsScreen() {
   const [selectedTheme, setSelectedTheme] = useState('Automatic');
@@ -12,15 +13,27 @@ export default function SettingsScreen() {
     { name: 'Dark', icon: '☾' },
   ];
 
-  const handleThemeChange = (newTheme: string) => {
-    if (newTheme !== 'Automatic') {
-      if (newTheme === 'Light' && theme === 'dark') {
-        toggleTheme();
-      } else if (newTheme === 'Dark' && theme === 'light') {
+  const handleThemeChange = async (newTheme: string) => {
+    if (newTheme === "Automatic") {
+      const systemTheme = Appearance.getColorScheme();
+      setSelectedTheme(newTheme);
+
+      if (systemTheme !== theme) {
         toggleTheme();
       }
+
+      await AsyncStorage.setItem("theme", "Automatic");
+    } else {
+      const isDark = newTheme === "Dark";
+      const currentIsDark = theme === "dark";
+
+      if (isDark !== currentIsDark) {
+        toggleTheme();
+      }
+
+      setSelectedTheme(newTheme);
+      await AsyncStorage.setItem("theme", newTheme);
     }
-    setSelectedTheme(newTheme);
   };
 
   return (
@@ -50,7 +63,6 @@ export default function SettingsScreen() {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
