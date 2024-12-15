@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -15,11 +15,6 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useTheme } from "../theme-context";
 
 const Tab = createMaterialTopTabNavigator();
-
-interface ScreenProps {
-  data: string[];
-  theme: string;
-}
 
 const generateData = () =>
   Array.from({ length: 50 }, (_, index) => `Пример данных ${index + 1}`);
@@ -89,22 +84,32 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#333",
   },
+  textItemDark: {
+    color: "#fff",
+  },
+  modalBackgroundDark: {
+    backgroundColor: "#444",
+  },
+  inputDark: {
+    borderColor: "#555",
+    color: "#fff",
+  },
 });
 
-function ScreenCheque({ data }: ScreenProps) {
+function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
+  const textStyle = theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem;
+
   return (
     <FlatList
       style={{ flex: 1 }}
       data={data}
       keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }: { item: string }) => (
-        <Text style={styles.textItem}>{item}</Text>
-      )}
+      renderItem={({ item }) => <Text style={textStyle}>{item}</Text>}
     />
   );
 }
 
-function ScreenBasket({ data, theme }: ScreenProps) {
+function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -113,9 +118,13 @@ function ScreenBasket({ data, theme }: ScreenProps) {
     setSearchQuery("");
   };
 
-  const filteredData = data.filter((item) =>
-    item.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = useMemo(
+    () => data.filter((item) => item.toLowerCase().includes(searchQuery.toLowerCase())),
+    [data, searchQuery]
   );
+
+  const modalStyles = theme === "dark" ? [styles.modalContainer, styles.modalBackgroundDark] : styles.modalContainer;
+  const inputStyles = theme === "dark" ? [styles.searchInput, styles.inputDark] : styles.searchInput;
 
   return (
     <View style={{ flex: 1 }}>
@@ -123,8 +132,8 @@ function ScreenBasket({ data, theme }: ScreenProps) {
         style={{ flex: 1 }}
         data={filteredData}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }: { item: string }) => (
-          <Text style={styles.textItem}>{item}</Text>
+        renderItem={({ item }) => (
+          <Text style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}>{item}</Text>
         )}
       />
 
@@ -141,11 +150,11 @@ function ScreenBasket({ data, theme }: ScreenProps) {
         visible={modalVisible}
         onRequestClose={closeModal}
       >
-        <SafeAreaView style={styles.modalContainer}>
+        <SafeAreaView style={modalStyles}>
           <TextInput
-            style={styles.searchInput}
-            placeholder="Search..."
-            placeholderTextColor={"#888"}
+            style={inputStyles}
+            placeholder="Поиск..."
+            placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -153,11 +162,11 @@ function ScreenBasket({ data, theme }: ScreenProps) {
             style={{ flex: 1 }}
             data={filteredData}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }: { item: string }) => (
-              <Text style={styles.textItem}>{item}</Text>
+            renderItem={({ item }) => (
+              <Text style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}>{item}</Text>
             )}
           />
-          <Button title="закрыть" onPress={closeModal} />
+          <Button title="Закрыть" onPress={closeModal} />
         </SafeAreaView>
       </Modal>
     </View>
