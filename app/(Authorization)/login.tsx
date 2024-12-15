@@ -11,13 +11,11 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const storedUser = await SecureStore.getItemAsync('user');
-      console.log("Stored User:", storedUser); // Для отладки
-  
       if (storedUser) {
         const { email: storedEmail, password: storedPassword } = JSON.parse(storedUser);
   
         if (email === storedEmail && password === storedPassword) {
-          router.push('/'); // Переход на главную страницу
+          router.push('/');
         } else {
           Alert.alert('Ошибка', 'Неверные данные.');
         }

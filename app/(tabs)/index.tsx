@@ -14,12 +14,11 @@ import { useTheme } from "../theme-context";
 
 const Tab = createMaterialTopTabNavigator();
 
-// Генерация данных
 const generateData = () => Array.from({ length: 50 }, (_, index) => `Пример данных ${index + 1}`);
 
 export default function Index() {
   const [data] = useState(generateData());
-  const { theme } = useTheme(); // Используем контекст темы
+  const { theme } = useTheme();
 
   return (
     <View style={{ flex: 1 }}>

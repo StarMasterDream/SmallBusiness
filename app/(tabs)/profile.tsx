@@ -6,20 +6,18 @@ import { router } from "expo-router";
 export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container}>
-      {/* Профиль */}
       <View style={styles.profileHeader}>
         <Image
           source={require('../../assets/images/adaptive-icon.png')}
           style={styles.profileImage}
         />
         <Text style={styles.name}>Ян Греку</Text>
-        <TouchableOpacity style={styles.photoButton}>
-          <Ionicons name="camera-outline" size={16} color="#007AFF" />
-          <Text style={styles.photoButtonText}>Изменить фотографию</Text>
+        <TouchableOpacity style={styles.photoButton} onPress={() => router.push("/(Authorization)/login")}>
+          <Ionicons name="exit" size={16} color="red" />
+          <Text style={styles.exitButtonText}>Выйти</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Настройки профиля */}
       <View style={styles.settingsSection}>
         <TouchableOpacity style={styles.menuItem}>
           <Ionicons name="person-outline" size={24} color="#FF2D55" />
@@ -60,8 +58,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  photoButtonText: {
-    color: '#007AFF',
+  exitButtonText: {
+    color: 'red',
     marginLeft: 5,
   },
   settingsSection: {
@@ -88,6 +86,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 20,
-    borderBottomWidth: 0, // Убираем нижнюю границу
+    borderBottomWidth: 0,
   },
 });
