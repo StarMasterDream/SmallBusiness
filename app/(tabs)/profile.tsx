@@ -15,7 +15,7 @@ export default function ProfileScreen() {
         <Text style={styles.name}>Ян Греку</Text>
         <TouchableOpacity style={styles.photoButton} onPress={() => router.replace("/login")}>
           <Text style={styles.exitButtonText}>Выйти</Text>
-          <Ionicons name="exit" size={16} color="red" />
+            <Ionicons name="exit" size={16} color="red" />
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -59,10 +59,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  exitButtonText: {
-    color: 'red',
-    marginLeft: 5,
-  },
+ exitButtonText: {
+   color: 'red',
+ },
   settingsSection: {
     backgroundColor: '#FFF',
     borderRadius: 10,

@@ -22,7 +22,15 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
   useEffect(() => {
     const loadTheme = async () => {
       const storedTheme = await AsyncStorage.getItem("theme");
-      setTheme(storedTheme || Appearance.getColorScheme() || "light");
+        const systemTheme = Appearance.getColorScheme();
+
+        if (storedTheme) {
+            setTheme(storedTheme);
+        } else if(systemTheme){
+            setTheme(systemTheme);
+        } else {
+            setTheme('light')
+        }
     };
 
     loadTheme();

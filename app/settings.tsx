@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTheme } from './theme-context'; // Import useTheme
 
 export default function SettingsScreen() {
   const [selectedTheme, setSelectedTheme] = useState('Automatic');
+  const { theme, toggleTheme } = useTheme(); // Используем hook
 
   const themes = [
     { name: 'Automatic', icon: '◑' },
@@ -10,27 +12,40 @@ export default function SettingsScreen() {
     { name: 'Dark', icon: '☾' },
   ];
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.subtitle}>Theme</Text>
+  const handleThemeChange = (newTheme: string) => {
+    if (newTheme !== 'Automatic') {
+      // Only toggle if the theme is not Automatic
+      if (newTheme === 'Light' && theme === 'dark') {
+        toggleTheme();
+      } else if (newTheme === 'Dark' && theme === 'light') {
+        toggleTheme();
+      }
+    }
+    setSelectedTheme(newTheme); // Update selectedTheme state
+  };
 
-      <View style={styles.optionsContainer}>
-        {themes.map((theme) => (
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme === 'light' ? '#F9F9F9' : '#1c1c1c' }]}>
+      <Text style={[styles.subtitle, { color: theme === 'light' ? '#000' : '#fff' }]}>Theme</Text>
+      <View style={[styles.optionsContainer, { backgroundColor: theme === 'light' ? '#FFF' : '#333' }]}>
+        {themes.map((t) => (
           <TouchableOpacity
-            key={theme.name}
-            style={styles.option}
-            onPress={() => setSelectedTheme(theme.name)}
+            key={t.name}
+            style={[styles.option, { borderBottomColor: theme === 'light' ? '#ddd' : '#555' }]}
+            onPress={() => handleThemeChange(t.name)} // Use t.name
           >
-            <Text style={styles.icon}>{theme.icon}</Text>
-            <Text style={styles.optionText}>{theme.name}</Text>
-            <View style={styles.radio}>
-              {selectedTheme === theme.name && <View style={styles.radioInner} />}
+            <Text style={[styles.icon, { color: theme === 'light' ? '#000' : '#fff' }]}>{t.icon}</Text>
+            <Text style={[styles.optionText, { color: theme === 'light' ? '#000' : '#fff' }]}>{t.name}</Text>
+            <View style={[styles.radio, { borderColor: theme === 'light' ? '#333' : '#fff' }]}>
+              {selectedTheme === t.name && ( // Use t.name here too
+                <View style={[styles.radioInner, { backgroundColor: theme === 'light' ? '#333' : '#fff' }]} />
+              )}
             </View>
           </TouchableOpacity>
         ))}
       </View>
-
-      <Text style={styles.note}>
+      <Text style={[styles.note, { color: theme === 'light' ? '#888' : '#ddd' }]}>
         Automatic is only supported on operating systems that allow you to
         control the system-wide color scheme.
       </Text>
@@ -38,10 +53,10 @@ export default function SettingsScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
     padding: 20,
   },
   subtitle: {
@@ -53,14 +68,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
-    backgroundColor: '#FFF',
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
   },
   optionText: {
     flex: 1,
@@ -75,7 +88,6 @@ const styles = StyleSheet.create({
     width: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#333',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -83,11 +95,9 @@ const styles = StyleSheet.create({
     height: 10,
     width: 10,
     borderRadius: 5,
-    backgroundColor: '#333',
   },
   note: {
     fontSize: 14,
-    color: '#888',
     marginTop: 20,
   },
 });
