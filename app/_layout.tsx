@@ -5,6 +5,12 @@ export default function StackLayout() {
   return (
     <ThemeProvider>
       <Stack>
+      <Stack.Screen
+          name="(authorization)"
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="(tabs)"
           options={{
