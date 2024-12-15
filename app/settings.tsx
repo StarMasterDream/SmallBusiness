@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme } from './theme-context'; // Import useTheme
+import { useTheme } from './theme-context';
 
 export default function SettingsScreen() {
   const [selectedTheme, setSelectedTheme] = useState('Automatic');
-  const { theme, toggleTheme } = useTheme(); // Используем hook
+  const { theme, toggleTheme } = useTheme();
 
   const themes = [
     { name: 'Automatic', icon: '◑' },
@@ -14,16 +14,14 @@ export default function SettingsScreen() {
 
   const handleThemeChange = (newTheme: string) => {
     if (newTheme !== 'Automatic') {
-      // Only toggle if the theme is not Automatic
       if (newTheme === 'Light' && theme === 'dark') {
         toggleTheme();
       } else if (newTheme === 'Dark' && theme === 'light') {
         toggleTheme();
       }
     }
-    setSelectedTheme(newTheme); // Update selectedTheme state
+    setSelectedTheme(newTheme);
   };
-
 
   return (
     <View style={[styles.container, { backgroundColor: theme === 'light' ? '#F9F9F9' : '#1c1c1c' }]}>
@@ -33,12 +31,12 @@ export default function SettingsScreen() {
           <TouchableOpacity
             key={t.name}
             style={[styles.option, { borderBottomColor: theme === 'light' ? '#ddd' : '#555' }]}
-            onPress={() => handleThemeChange(t.name)} // Use t.name
+            onPress={() => handleThemeChange(t.name)}
           >
             <Text style={[styles.icon, { color: theme === 'light' ? '#000' : '#fff' }]}>{t.icon}</Text>
             <Text style={[styles.optionText, { color: theme === 'light' ? '#000' : '#fff' }]}>{t.name}</Text>
             <View style={[styles.radio, { borderColor: theme === 'light' ? '#333' : '#fff' }]}>
-              {selectedTheme === t.name && ( // Use t.name here too
+              {selectedTheme === t.name && (
                 <View style={[styles.radioInner, { backgroundColor: theme === 'light' ? '#333' : '#fff' }]} />
               )}
             </View>
