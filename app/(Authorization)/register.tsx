@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -25,7 +26,7 @@ const Register = () => {
   };
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Регистрация</Text>
       <TextInput
         placeholder="Email"
@@ -42,7 +43,7 @@ const Register = () => {
       />
       <Button title="Зарегистрироваться" onPress={handleRegister} />
       <Button title="Назад к Входу" onPress={() => router.push('/login')} />
-    </View>
+    </SafeAreaView>
   );
 };
 

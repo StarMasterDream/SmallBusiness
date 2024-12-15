@@ -9,6 +9,7 @@ import {
   FlatList,
   Button,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useTheme } from "../theme-context";
 
@@ -21,7 +22,7 @@ export default function Index() {
   const { theme } = useTheme();
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Tab.Navigator
         screenOptions={{
           tabBarStyle: { backgroundColor: theme === "light" ? "#6200ee" : "#333" },
@@ -30,13 +31,13 @@ export default function Index() {
         }}
       >
         <Tab.Screen name="Коржина">
-          {() => <ScreenA data={data} theme={theme} />}
+          {() => <ScreenBasket data={data} theme={theme} />}
         </Tab.Screen>
         <Tab.Screen name="Чеки">
-          {() => <Screen data={data} theme={theme} />}
+          {() => <ScreenCheque data={data} theme={theme} />}
         </Tab.Screen>
       </Tab.Navigator>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -45,7 +46,7 @@ interface ScreenProps {
   theme: string;
 }
 
-function Screen({ data, theme }: ScreenProps) {
+function ScreenCheque({ data, theme }: ScreenProps) {
   return (
     <FlatList
       data={data}
@@ -66,7 +67,7 @@ function Screen({ data, theme }: ScreenProps) {
   );
 }
 
-function ScreenA({ data, theme }: ScreenProps) {
+function ScreenBasket({ data, theme }: ScreenProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -123,7 +124,7 @@ function ScreenA({ data, theme }: ScreenProps) {
   });
 
   return (
-    <View style={styles.wrapper}>
+    <SafeAreaView style={styles.wrapper}>
       <FlatList
         data={data}
         keyExtractor={(item, index) => index.toString()}
@@ -167,6 +168,6 @@ function ScreenA({ data, theme }: ScreenProps) {
           <Button title="Закрыть" onPress={closeModal} />
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }

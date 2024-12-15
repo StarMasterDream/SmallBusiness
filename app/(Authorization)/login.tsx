@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ const Login = () => {
   };
   
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Вход</Text>
       <TextInput
         placeholder="Email"
@@ -46,7 +47,7 @@ const Login = () => {
       />
       <Button title="Войти" onPress={handleLogin} />
       <Button title="Регистрация" onPress={() => router.push('/register')} />
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -2,21 +2,22 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { router } from "expo-router";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.profileHeader}>
+      <SafeAreaView style={styles.profileHeader}>
         <Image
           source={require('../../assets/images/adaptive-icon.png')}
           style={styles.profileImage}
         />
         <Text style={styles.name}>Ян Греку</Text>
         <TouchableOpacity style={styles.photoButton} onPress={() => router.push("/(Authorization)/login")}>
-          <Ionicons name="exit" size={16} color="red" />
           <Text style={styles.exitButtonText}>Выйти</Text>
+          <Ionicons name="exit" size={16} color="red" />
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
       <View style={styles.settingsSection}>
         <TouchableOpacity style={styles.menuItem}>
