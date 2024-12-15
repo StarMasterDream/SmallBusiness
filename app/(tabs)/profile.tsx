@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { router } from "expo-router";
+import { router, Link } from "expo-router";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
@@ -13,7 +13,7 @@ export default function ProfileScreen() {
           style={styles.profileImage}
         />
         <Text style={styles.name}>Ян Греку</Text>
-        <TouchableOpacity style={styles.photoButton} onPress={() => router.push("/(Authorization)/login")}>
+        <TouchableOpacity style={styles.photoButton} onPress={() => router.replace("/login")}>
           <Text style={styles.exitButtonText}>Выйти</Text>
           <Ionicons name="exit" size={16} color="red" />
         </TouchableOpacity>

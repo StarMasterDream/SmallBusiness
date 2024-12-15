@@ -1,21 +1,20 @@
 import { Stack } from "expo-router";
-import ThemeProvider from "./theme-context";
+import ThemeProvider from "../theme-context";
 
 export default function StackLayout() {
   return (
     <ThemeProvider>
       <Stack>
         <Stack.Screen
-          name="(tabs)"
+          name="login"
           options={{
             headerShown: false,
           }}
         />
         <Stack.Screen
-          name="settings"
+          name="register"
           options={{
-            title: "Настройки",
-            headerBackTitle: "назад",
+            headerShown: false,
           }}
         />
       </Stack>
