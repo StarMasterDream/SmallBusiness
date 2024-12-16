@@ -26,7 +26,11 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
         const systemTheme = Appearance.getColorScheme();
 
         if (storedTheme) {
-          setTheme(storedTheme);
+          if (storedTheme === "Automatic" && systemTheme) {
+            setTheme(systemTheme);
+          } else {
+            setTheme(storedTheme);
+          }
         } else if (systemTheme) {
           setTheme(systemTheme);
         } else {
@@ -38,6 +42,16 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
     };
 
     loadTheme();
+
+    const listener = Appearance.addChangeListener(({ colorScheme }) => {
+      AsyncStorage.getItem("theme").then((storedTheme) => {
+        if (storedTheme === "Automatic") {
+          setTheme(colorScheme || "light");
+        }
+      });
+    });
+
+    return () => listener.remove();
   }, []);
 
   const toggleTheme = async () => {
