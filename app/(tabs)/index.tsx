@@ -33,7 +33,7 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView style={styles.wrapper}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
       <Tab.Navigator screenOptions={tabStyles}>
         <Tab.Screen name="Корзина">
           {() => <ScreenBasket data={data} theme={theme} />}
@@ -42,7 +42,7 @@ export default function Index() {
           {() => <ScreenCheque data={data} theme={theme} />}
         </Tab.Screen>
       </Tab.Navigator>
-    </SafeAreaView>
+      </SafeAreaView>
   );
 }
 
@@ -105,6 +105,8 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
       data={data}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => <Text style={textStyle}>{item}</Text>}
+      //contentInsetAdjustmentBehavior="automatic"
+      //keyboardShouldPersistTaps="handled"
     />
   );
 }
