@@ -61,40 +61,76 @@ const styles = StyleSheet.create({
     right: 20,
     bottom: 30,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 6,
   },
   modalContainer: {
     flex: 1,
     padding: 20,
     backgroundColor: "#FFFFFF",
   },
+  modalBackgroundDark: {
+    backgroundColor: "#1E1E1E",
+  },
   searchInput: {
     height: 50,
     borderWidth: 1,
-    borderColor: "#aaa",
+    borderColor: "#ccc",
     marginBottom: 10,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  textItem: {
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    backgroundColor: "#F9F9F9",
     fontSize: 16,
-    marginBottom: 8,
     color: "#333",
-  },
-  textItemDark: {
-    color: "#fff",
-  },
-  modalBackgroundDark: {
-    backgroundColor: "#444",
   },
   inputDark: {
     borderColor: "#555",
+    backgroundColor: "#2C2C2C",
+    color: "#FFF",
+  },
+  textItem: {
+    fontSize: 16,
+    marginBottom: 12,
+    padding: 10,
+    backgroundColor: "#F2F2F2",
+    color: "#333",
+    borderRadius: 8,
+  },
+  textItemDark: {
+    backgroundColor: "#333",
+    color: "#FFF",
+  },
+  tabBarStyle: {
+    backgroundColor: "#6200ee",
+    height: Platform.OS === "ios" ? 60 : 50,
+  },
+  tabBarStyleDark: {
+    backgroundColor: "#333",
+  },
+  tabBarLabelStyle: {
     color: "#fff",
+    fontSize: 14,
+  },
+  tabBarIndicatorStyle: {
+    backgroundColor: "#ff9800",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 24,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+  },
+  modalTitleDark: {
+    color: "#FFF",
   },
 });
+
 
 function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
   const textStyle = theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem;

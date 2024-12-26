@@ -1,51 +1,67 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../theme-context';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { theme } = useTheme();
+  const isLightTheme = theme === 'light';
+
+  // Устанавливаем цвет StatusBar в зависимости от темы
+  const statusBarStyle = isLightTheme ? 'dark-content' : 'light-content';
+  const statusBarBackgroundColor = isLightTheme ? '#F2F2F7' : '#1C1C1E';
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View style={styles.profileHeader}>
-          <Image
-            source={require('../../assets/images/adaptive-icon.png')}
-            style={styles.profileImage}
-          />
-          <Text style={styles.name}>Ян Греку</Text>
-          <TouchableOpacity style={styles.photoButton} onPress={() => router.replace("/login")}>
-            <Text style={styles.exitButtonText}>Выйти</Text>
-            <Ionicons name="exit" size={16} color="red" />
-          </TouchableOpacity>
-        </View>
+    <>
+      {/* Установка цвета системной панели */}
+      <StatusBar
+        barStyle={statusBarStyle}
+        backgroundColor={statusBarBackgroundColor}
+      />
 
-        <View style={styles.settingsSection}>
-          <TouchableOpacity style={styles.menuItem}>
-            <Ionicons name="person-outline" size={24} color="#FF2D55" />
-            <Text style={styles.menuText}>Мой профиль</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.lastMenuItem} onPress={() => router.push("/settings")}>
-            <MaterialIcons name="settings" size={24} color="#FF9500" />
-            <Text style={styles.menuText}>Настройки</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <SafeAreaView style={[styles.container, { backgroundColor: statusBarBackgroundColor }]}>
+        <ScrollView>
+          <View style={[styles.profileHeader, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
+            <Image
+              source={require('../../assets/images/adaptive-icon.png')}
+              style={styles.profileImage}
+            />
+            <Text style={[styles.name, { color: isLightTheme ? '#000' : '#FFF' }]}>Ян Греку</Text>
+            <TouchableOpacity style={styles.photoButton} onPress={() => router.replace("/login")}>
+              <Text style={[styles.exitButtonText, { color: 'red' }]}>Выйти</Text>
+              <Ionicons name="exit" size={16} color="red" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.settingsSection, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
+            <TouchableOpacity style={[styles.menuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}>
+              <Ionicons name="person-outline" size={24} color="#FF2D55" />
+              <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Мой профиль</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.lastMenuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
+              onPress={() => router.push("/settings")}
+            >
+              <MaterialIcons name="settings" size={24} color="#FF9500" />
+              <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Настройки</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
   },
   profileHeader: {
     alignItems: 'center',
     paddingVertical: 20,
-    backgroundColor: '#FFF',
     marginBottom: 10,
     paddingHorizontal: 15,
   },
@@ -65,11 +81,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   exitButtonText: {
-    color: 'red',
     margin: 10,
   },
   settingsSection: {
-    backgroundColor: '#FFF',
     borderRadius: 10,
     marginHorizontal: 10,
     paddingVertical: 5,
@@ -80,7 +94,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5EA',
   },
   menuText: {
     fontSize: 16,

@@ -1,11 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Appearance } from 'react-native';
 import { useTheme } from './theme-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SettingsScreen() {
-  const [selectedTheme, setSelectedTheme] = useState('Automatic');
   const { theme, toggleTheme } = useTheme();
+  const [selectedTheme, setSelectedTheme] = useState('Automatic');
+
+  // Загрузка сохранённой темы при монтировании компонента
+  useEffect(() => {
+    const initializeTheme = async () => {
+      try {
+        const storedTheme = await AsyncStorage.getItem('theme');
+
+        if (storedTheme) {
+          setSelectedTheme(storedTheme);
+
+          // Применить сохранённую тему, если она отличается от текущей
+          if (storedTheme === 'Light' && theme !== 'light') {
+            toggleTheme(); // Переключаем на светлую тему
+          } else if (storedTheme === 'Dark' && theme !== 'dark') {
+            toggleTheme(); // Переключаем на тёмную тему
+          }
+        } else {
+          // Установка темы "Automatic" по умолчанию
+          const systemTheme = Appearance.getColorScheme();
+          setSelectedTheme('Automatic');
+
+          if (systemTheme !== theme) {
+            toggleTheme(); // Синхронизируем с системной темой
+          }
+
+          await AsyncStorage.setItem('theme', 'Automatic');
+        }
+      } catch (error) {
+        console.error('Failed to load saved theme:', error);
+      }
+    };
+
+    initializeTheme();
+  }, []);
 
   const themes = [
     { name: 'Automatic', icon: '◑' },
@@ -14,25 +48,29 @@ export default function SettingsScreen() {
   ];
 
   const handleThemeChange = async (newTheme: string) => {
-    if (newTheme === "Automatic") {
-      const systemTheme = Appearance.getColorScheme();
-      setSelectedTheme(newTheme);
+    try {
+      if (newTheme === 'Automatic') {
+        const systemTheme = Appearance.getColorScheme();
+        setSelectedTheme(newTheme);
 
-      if (systemTheme !== theme) {
-        toggleTheme();
+        if (systemTheme !== theme) {
+          toggleTheme();
+        }
+
+        await AsyncStorage.setItem('theme', 'Automatic');
+      } else {
+        const isDark = newTheme === 'Dark';
+        const currentIsDark = theme === 'dark';
+
+        if (isDark !== currentIsDark) {
+          toggleTheme();
+        }
+
+        setSelectedTheme(newTheme);
+        await AsyncStorage.setItem('theme', newTheme);
       }
-
-      await AsyncStorage.setItem("theme", "Automatic");
-    } else {
-      const isDark = newTheme === "Dark";
-      const currentIsDark = theme === "dark";
-
-      if (isDark !== currentIsDark) {
-        toggleTheme();
-      }
-
-      setSelectedTheme(newTheme);
-      await AsyncStorage.setItem("theme", newTheme);
+    } catch (error) {
+      console.error('Failed to save selected theme:', error);
     }
   };
 

@@ -23,18 +23,23 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const loadTheme = async () => {
       try {
         const storedTheme = await AsyncStorage.getItem("theme");
-        const systemTheme = Appearance.getColorScheme();
 
         if (storedTheme) {
-          if (storedTheme === "Automatic" && systemTheme) {
-            setTheme(systemTheme);
+          // Если тема сохранена в AsyncStorage
+          if (storedTheme === "Automatic") {
+            const systemTheme = Appearance.getColorScheme();
+            setTheme(systemTheme || "light");
           } else {
             setTheme(storedTheme);
           }
-        } else if (systemTheme) {
-          setTheme(systemTheme);
         } else {
-          setTheme("light");
+          // Если тема отсутствует в AsyncStorage, устанавливаем light
+          const systemTheme = Appearance.getColorScheme();
+          const defaultTheme = systemTheme || "light"; // Автоматическая тема или светлая
+          setTheme(defaultTheme);
+
+          // Сохраняем тему в AsyncStorage
+          await AsyncStorage.setItem("theme", defaultTheme === "light" ? "Light" : "Dark");
         }
       } catch (error) {
         console.error("Failed to load theme:", error);
@@ -43,6 +48,7 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     loadTheme();
 
+    // Слушаем изменения системной темы
     const listener = Appearance.addChangeListener(({ colorScheme }) => {
       AsyncStorage.getItem("theme").then((storedTheme) => {
         if (storedTheme === "Automatic") {
@@ -58,7 +64,7 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     try {
-      await AsyncStorage.setItem("theme", newTheme);
+      await AsyncStorage.setItem("theme", newTheme === "light" ? "Light" : "Dark");
     } catch (error) {
       console.error("Failed to save theme:", error);
     }
