@@ -144,47 +144,47 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
       </TouchableOpacity>
 
       <Modal
-  animationType="slide"
-  transparent={false}
-  visible={modalVisible}
-  onRequestClose={closeModal}
->
-  <SafeAreaView
-    style={[
-      styles.modalContainer,
-      theme === "dark" ? styles.modalBackgroundDark : null,
-    ]}
-  >
-    <TextInput
-      style={theme === "dark" ? [styles.searchInput, styles.inputDark] : styles.searchInput}
-      placeholder="Поиск..."
-      placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
-      value={searchQuery}
-      onChangeText={setSearchQuery}
-    />
-    <FlatList
-      style={containerStyle}
-      contentContainerStyle={{
-        paddingBottom: 20,
-      }}
-      data={filteredData}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => (
-        <Text
-          style={
-            theme === "dark"
-              ? [styles.textItem, styles.textItemDark]
-              : styles.textItem
-          }
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <SafeAreaView
+          style={[
+            styles.modalContainer,
+            theme === "dark" ? styles.modalBackgroundDark : null,
+          ]}
         >
-          {item}
-        </Text>
-      )}
-      keyboardShouldPersistTaps="handled"
-    />
-    <Button title="Закрыть" onPress={closeModal} />
-  </SafeAreaView>
-</Modal>
+          <TextInput
+            style={theme === "dark" ? [styles.searchInput, styles.inputDark] : styles.searchInput}
+            placeholder="Поиск..."
+            placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <FlatList
+            style={containerStyle}
+            contentContainerStyle={{
+              paddingBottom: 20,
+            }}
+            data={filteredData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Text
+                style={
+                  theme === "dark"
+                    ? [styles.textItem, styles.textItemDark]
+                    : styles.textItem
+                }
+              >
+                {item}
+              </Text>
+            )}
+            keyboardShouldPersistTaps="handled"
+          />
+          <Button title="Закрыть" onPress={closeModal} />
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 }
