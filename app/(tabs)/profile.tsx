@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
@@ -7,16 +7,18 @@ import { useTheme } from '../theme-context';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
-  const isLightTheme = theme === 'light';
+  const { theme, toggleTheme } = useTheme();
 
-  // Устанавливаем цвет StatusBar в зависимости от темы
+  const isLightTheme = theme === 'light';
   const statusBarStyle = isLightTheme ? 'dark-content' : 'light-content';
   const statusBarBackgroundColor = isLightTheme ? '#F2F2F7' : '#1C1C1E';
 
+  useEffect(() => {
+    // Здесь можно убедиться, что тема корректно загружена из контекста
+  }, [theme]);
+
   return (
     <>
-      {/* Установка цвета системной панели */}
       <StatusBar
         barStyle={statusBarStyle}
         backgroundColor={statusBarBackgroundColor}

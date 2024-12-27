@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -21,7 +21,11 @@ const generateData = () =>
 
 export default function Index() {
   const [data] = useState(generateData());
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    // Логика для синхронизации темы при загрузке, если потребуется
+  }, [theme]);
 
   const tabStyles = {
     tabBarStyle: {
@@ -33,7 +37,7 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "left", "right"]}>
       <Tab.Navigator screenOptions={tabStyles}>
         <Tab.Screen name="Корзина">
           {() => <ScreenBasket data={data} theme={theme} />}
@@ -42,7 +46,113 @@ export default function Index() {
           {() => <ScreenCheque data={data} theme={theme} />}
         </Tab.Screen>
       </Tab.Navigator>
-      </SafeAreaView>
+    </SafeAreaView>
+  );
+}
+
+function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
+  const textStyle =
+    theme === "dark"
+      ? [styles.textItem, styles.textItemDark]
+      : styles.textItem;
+
+  return (
+    <FlatList
+      style={{ flex: 1 }}
+      data={data}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => <Text style={textStyle}>{item}</Text>}
+    />
+  );
+}
+
+function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSearchQuery("");
+  };
+
+  const filteredData = useMemo(
+    () =>
+      data.filter((item) =>
+        item.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [data, searchQuery]
+  );
+
+  const modalStyles =
+    theme === "dark"
+      ? [styles.modalContainer, styles.modalBackgroundDark]
+      : styles.modalContainer;
+
+  const inputStyles =
+    theme === "dark"
+      ? [styles.searchInput, styles.inputDark]
+      : styles.searchInput;
+
+  return (
+    <View style={{ flex: 1 }}>
+      <FlatList
+        style={{ flex: 1 }}
+        data={filteredData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Text
+            style={
+              theme === "dark"
+                ? [styles.textItem, styles.textItemDark]
+                : styles.textItem
+            }
+          >
+            {item}
+          </Text>
+        )}
+      />
+
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={{ color: "#fff", fontSize: 24 }}>+</Text>
+      </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <SafeAreaView style={modalStyles}>
+          <TextInput
+            style={inputStyles}
+            placeholder="Поиск..."
+            placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <FlatList
+            style={{ flex: 1 }}
+            data={filteredData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Text
+                style={
+                  theme === "dark"
+                    ? [styles.textItem, styles.textItemDark]
+                    : styles.textItem
+                }
+              >
+                {item}
+              </Text>
+            )}
+          />
+          <Button title="Закрыть" onPress={closeModal} />
+        </SafeAreaView>
+      </Modal>
+    </View>
   );
 }
 
@@ -130,83 +240,3 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
 });
-
-
-function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
-  const textStyle = theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem;
-
-  return (
-    <FlatList
-      style={{ flex: 1 }}
-      data={data}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => <Text style={textStyle}>{item}</Text>}
-      //contentInsetAdjustmentBehavior="automatic"
-      //keyboardShouldPersistTaps="handled"
-    />
-  );
-}
-
-function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setSearchQuery("");
-  };
-
-  const filteredData = useMemo(
-    () => data.filter((item) => item.toLowerCase().includes(searchQuery.toLowerCase())),
-    [data, searchQuery]
-  );
-
-  const modalStyles = theme === "dark" ? [styles.modalContainer, styles.modalBackgroundDark] : styles.modalContainer;
-  const inputStyles = theme === "dark" ? [styles.searchInput, styles.inputDark] : styles.searchInput;
-
-  return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        style={{ flex: 1 }}
-        data={filteredData}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}>{item}</Text>
-        )}
-      />
-
-      <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={{ color: "#fff", fontSize: 24 }}>+</Text>
-      </TouchableOpacity>
-
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <SafeAreaView style={modalStyles}>
-          <TextInput
-            style={inputStyles}
-            placeholder="Поиск..."
-            placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <FlatList
-            style={{ flex: 1 }}
-            data={filteredData}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <Text style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}>{item}</Text>
-            )}
-          />
-          <Button title="Закрыть" onPress={closeModal} />
-        </SafeAreaView>
-      </Modal>
-    </View>
-  );
-}
