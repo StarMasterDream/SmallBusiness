@@ -9,6 +9,7 @@ import {
   FlatList,
   Button,
   Platform,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -22,6 +23,9 @@ const generateData = () =>
 export default function Index() {
   const [data] = useState(generateData());
   const { theme} = useTheme();
+  const isLightTheme = theme === 'light';
+  const statusBarStyle = isLightTheme ? 'dark-content' : 'light-content';
+  const statusBarBackgroundColor = isLightTheme ? '#F2F2F7' : '#1C1C1E';
 
   useEffect(() => {
   }, [theme]);
@@ -36,7 +40,15 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top", "left", "right"]}>
+    <>
+    <StatusBar
+            barStyle={statusBarStyle}
+            backgroundColor={statusBarBackgroundColor}
+          />
+      <SafeAreaView 
+        style={[styles.container, { backgroundColor: statusBarBackgroundColor }]} 
+        edges={['top', 'left', 'right']}
+      >
       <Tab.Navigator screenOptions={tabStyles}>
         <Tab.Screen name="Корзина">
           {() => <ScreenBasket data={data} theme={theme} />}
@@ -46,6 +58,7 @@ export default function Index() {
         </Tab.Screen>
       </Tab.Navigator>
     </SafeAreaView>
+    </>
   );
 }
 
@@ -55,13 +68,26 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
       ? [styles.textItem, styles.textItemDark]
       : styles.textItem;
 
+  const containerStyle =
+    theme === "dark"
+      ? [styles.flatListContainer, styles.flatListContainerDark]
+      : styles.flatListContainer;
+
   return (
-    <FlatList
-      style={{ flex: 1 }}
-      data={data}
-      keyExtractor={(index) => index.toString()}
-      renderItem={({ item }) => <Text style={textStyle}>{item}</Text>}
-    />
+    <View style={{ flex: 1 }}>
+      <FlatList
+        style={containerStyle}
+        contentContainerStyle={{
+          paddingBottom: 20,
+        }}
+        data={data}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Text style={textStyle}>{item}</Text>
+        )}
+        keyboardShouldPersistTaps="handled"
+      />
+    </View>
   );
 }
 
@@ -82,22 +108,20 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
     [data, searchQuery]
   );
 
-  const modalStyles =
+  const containerStyle =
     theme === "dark"
-      ? [styles.modalContainer, styles.modalBackgroundDark]
-      : styles.modalContainer;
-
-  const inputStyles =
-    theme === "dark"
-      ? [styles.searchInput, styles.inputDark]
-      : styles.searchInput;
+      ? [styles.flatListContainer, styles.flatListContainerDark]
+      : styles.flatListContainer;
 
   return (
     <View style={{ flex: 1 }}>
       <FlatList
-        style={{ flex: 1 }}
+        style={containerStyle}
+        contentContainerStyle={{
+          paddingBottom: 20,
+        }}
         data={filteredData}
-        keyExtractor={(index) => index.toString()}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <Text
             style={
@@ -109,6 +133,7 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
             {item}
           </Text>
         )}
+        keyboardShouldPersistTaps="handled"
       />
 
       <TouchableOpacity
@@ -119,43 +144,56 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
       </TouchableOpacity>
 
       <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={closeModal}
-      >
-        <SafeAreaView style={modalStyles}>
-          <TextInput
-            style={inputStyles}
-            placeholder="Поиск..."
-            placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <FlatList
-            style={{ flex: 1 }}
-            data={filteredData}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <Text
-                style={
-                  theme === "dark"
-                    ? [styles.textItem, styles.textItemDark]
-                    : styles.textItem
-                }
-              >
-                {item}
-              </Text>
-            )}
-          />
-          <Button title="Закрыть" onPress={closeModal} />
-        </SafeAreaView>
-      </Modal>
+  animationType="slide"
+  transparent={false}
+  visible={modalVisible}
+  onRequestClose={closeModal}
+>
+  <SafeAreaView
+    style={[
+      styles.modalContainer,
+      theme === "dark" ? styles.modalBackgroundDark : null,
+    ]}
+  >
+    <TextInput
+      style={theme === "dark" ? [styles.searchInput, styles.inputDark] : styles.searchInput}
+      placeholder="Поиск..."
+      placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
+      value={searchQuery}
+      onChangeText={setSearchQuery}
+    />
+    <FlatList
+      style={containerStyle}
+      contentContainerStyle={{
+        paddingBottom: 20,
+      }}
+      data={filteredData}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => (
+        <Text
+          style={
+            theme === "dark"
+              ? [styles.textItem, styles.textItemDark]
+              : styles.textItem
+          }
+        >
+          {item}
+        </Text>
+      )}
+      keyboardShouldPersistTaps="handled"
+    />
+    <Button title="Закрыть" onPress={closeModal} />
+  </SafeAreaView>
+</Modal>
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   wrapper: {
     flex: 1,
   },
@@ -189,34 +227,70 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     marginBottom: 10,
     paddingHorizontal: 15,
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: "#F9F9F9",
     fontSize: 16,
     color: "#333",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   inputDark: {
     borderColor: "#555",
     backgroundColor: "#2C2C2C",
     color: "#FFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
   textItem: {
     fontSize: 16,
-    marginBottom: 12,
-    padding: 10,
-    backgroundColor: "#F2F2F2",
+    margin: 12,
+    padding: 15,
+    backgroundColor: "#F9F9F9",
     color: "#333",
-    borderRadius: 8,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   textItemDark: {
-    backgroundColor: "#333",
+    backgroundColor: "#2C2C2C",
     color: "#FFF",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  flatListContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: "#FFFFFF",
+  },
+  flatListContainerDark: {
+    backgroundColor: "#1E1E1E",
   },
   tabBarStyle: {
     backgroundColor: "#6200ee",
     height: Platform.OS === "ios" ? 60 : 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   tabBarStyleDark: {
     backgroundColor: "#333",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
   tabBarLabelStyle: {
     color: "#fff",
@@ -224,6 +298,8 @@ const styles = StyleSheet.create({
   },
   tabBarIndicatorStyle: {
     backgroundColor: "#ff9800",
+    height: 3,
+    borderRadius: 2,
   },
   buttonText: {
     color: "#FFF",
