@@ -7,7 +7,6 @@ export default function SettingsScreen() {
   const { theme, toggleTheme } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState('Automatic');
 
-  // Загрузка сохранённой темы при монтировании компонента
   useEffect(() => {
     const initializeTheme = async () => {
       try {
@@ -16,19 +15,17 @@ export default function SettingsScreen() {
         if (storedTheme) {
           setSelectedTheme(storedTheme);
 
-          // Применить сохранённую тему, если она отличается от текущей
           if (storedTheme === 'Light' && theme !== 'light') {
-            toggleTheme(); // Переключаем на светлую тему
+            toggleTheme();
           } else if (storedTheme === 'Dark' && theme !== 'dark') {
-            toggleTheme(); // Переключаем на тёмную тему
+            toggleTheme(); 
           }
         } else {
-          // Установка темы "Automatic" по умолчанию
           const systemTheme = Appearance.getColorScheme();
           setSelectedTheme('Automatic');
 
           if (systemTheme !== theme) {
-            toggleTheme(); // Синхронизируем с системной темой
+            toggleTheme();
           }
 
           await AsyncStorage.setItem('theme', 'Automatic');

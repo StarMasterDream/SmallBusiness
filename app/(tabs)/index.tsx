@@ -21,10 +21,9 @@ const generateData = () =>
 
 export default function Index() {
   const [data] = useState(generateData());
-  const { theme, toggleTheme } = useTheme();
+  const { theme} = useTheme();
 
   useEffect(() => {
-    // Логика для синхронизации темы при загрузке, если потребуется
   }, [theme]);
 
   const tabStyles = {
@@ -60,7 +59,7 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
     <FlatList
       style={{ flex: 1 }}
       data={data}
-      keyExtractor={(item, index) => index.toString()}
+      keyExtractor={(index) => index.toString()}
       renderItem={({ item }) => <Text style={textStyle}>{item}</Text>}
     />
   );
@@ -98,7 +97,7 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
       <FlatList
         style={{ flex: 1 }}
         data={filteredData}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(index) => index.toString()}
         renderItem={({ item }) => (
           <Text
             style={

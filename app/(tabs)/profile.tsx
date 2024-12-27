@@ -7,14 +7,13 @@ import { useTheme } from '../theme-context';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
 
   const isLightTheme = theme === 'light';
   const statusBarStyle = isLightTheme ? 'dark-content' : 'light-content';
   const statusBarBackgroundColor = isLightTheme ? '#F2F2F7' : '#1C1C1E';
 
   useEffect(() => {
-    // Здесь можно убедиться, что тема корректно загружена из контекста
   }, [theme]);
 
   return (

@@ -25,7 +25,6 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
         const storedTheme = await AsyncStorage.getItem("theme");
 
         if (storedTheme) {
-          // Если тема сохранена в AsyncStorage
           if (storedTheme === "Automatic") {
             const systemTheme = Appearance.getColorScheme();
             setTheme(systemTheme || "light");
@@ -33,12 +32,9 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
             setTheme(storedTheme);
           }
         } else {
-          // Если тема отсутствует в AsyncStorage, устанавливаем light
           const systemTheme = Appearance.getColorScheme();
-          const defaultTheme = systemTheme || "light"; // Автоматическая тема или светлая
+          const defaultTheme = systemTheme || "light";
           setTheme(defaultTheme);
-
-          // Сохраняем тему в AsyncStorage
           await AsyncStorage.setItem("theme", defaultTheme === "light" ? "Light" : "Dark");
         }
       } catch (error) {
@@ -48,7 +44,6 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     loadTheme();
 
-    // Слушаем изменения системной темы
     const listener = Appearance.addChangeListener(({ colorScheme }) => {
       AsyncStorage.getItem("theme").then((storedTheme) => {
         if (storedTheme === "Automatic") {
