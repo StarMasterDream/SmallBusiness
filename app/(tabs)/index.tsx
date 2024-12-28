@@ -51,7 +51,7 @@ const ListItem = ({ item, theme }: { item: any; theme: string }) => {
             <ItemRow label="TTN" value={item.TTN} theme={theme} />
             <ItemRow label="DateTime" value={new Date(item.DateTime).toLocaleDateString()} theme={theme} />
             <ItemRow label="Summ" value={item.Summ} theme={theme} />
-            <ItemRow label="Currency" value={item.Currency} theme={theme} />
+            <ItemRow label="Currency" value={item.Curency} theme={theme} />
             <ItemRow label="User" value={item.User} theme={theme} />
           </>
         )}
