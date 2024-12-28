@@ -10,10 +10,12 @@ import {
   Button,
   Platform,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useTheme } from "../theme-context";
+import axios from "axios";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -63,6 +65,29 @@ export default function Index() {
 }
 
 function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
+  const [remoteData, setRemoteData] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get(
+        "https://65c29882f7e6ea59682b8fcd.mockapi.io/v1/hs/trade/ReceiptOfGoods/Authorization"
+      );
+      setRemoteData(response.data.map((item: any) => item.Number)); // Пример: берем только поле `Number`
+    } catch (err) {
+      setError("Ошибка загрузки данных. Попробуйте снова.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const textStyle =
     theme === "dark"
       ? [styles.textItem, styles.textItemDark]
@@ -73,6 +98,24 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
       ? [styles.flatListContainer, styles.flatListContainerDark]
       : styles.flatListContainer;
 
+  if (loading) {
+    return (
+      <View style={[containerStyle, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color={theme === "dark" ? "#fff" : "#000"} />
+        <Text style={textStyle}>Загрузка данных...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[containerStyle, { justifyContent: "center", alignItems: "center" }]}>
+        <Text style={[textStyle, { color: "red" }]}>{error}</Text>
+        <Button title="Повторить" onPress={fetchData} />
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -80,7 +123,7 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
         contentContainerStyle={{
           paddingBottom: 20,
         }}
-        data={data}
+        data={remoteData}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <Text style={textStyle}>{item}</Text>
@@ -90,6 +133,7 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
     </View>
   );
 }
+
 
 function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
   const [modalVisible, setModalVisible] = useState(false);
