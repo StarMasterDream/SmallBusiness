@@ -29,29 +29,36 @@ const ItemRow = ({ label, value, theme }: { label: string; value: string | numbe
   </View>
 );
 
-const ListItem = ({ item, theme }: { item: any; theme: string }) => (
-  <TouchableOpacity style={styles.container}>
-    <View
-      style={
-        theme === "dark" ? [styles.card, styles.cardDark] : styles.card
-      }
+const ListItem = ({ item, theme }: { item: any; theme: string }) => {
+  const [showAllRows, setShowAllRows] = useState(false);
+
+  const toggleRows = () => {
+    setShowAllRows((prev) => !prev);
+  };
+
+  return (
+    <TouchableOpacity
+      style={styles.container}
+      onPress={toggleRows}
     >
-      <ItemRow label="Number" value={item.Number} theme={theme} />
-      <ItemRow label="Organization" value={item.Organization} theme={theme} />
-      <ItemRow label="Storage" value={item.Storage} theme={theme} />
-      <ItemRow label="Counterparty" value={item.Counterparty} theme={theme} />
-      <ItemRow label="TTN" value={item.TTN} theme={theme} />
-      <ItemRow
-        label="DateTime"
-        value={new Date(item.DateTime).toLocaleDateString()}
-        theme={theme}
-      />
-      <ItemRow label="Summ" value={item.Summ} theme={theme}/>
-      <ItemRow label="Currency" value={item.Currency} theme={theme} />
-      <ItemRow label="User" value={item.User} theme={theme}/>
-    </View>
-  </TouchableOpacity>
-);
+      <View style={theme === "dark" ? [styles.card, styles.cardDark] : styles.card}>
+        <ItemRow label="Number" value={item.Number} theme={theme} />
+        <ItemRow label="Organization" value={item.Organization} theme={theme} />
+        {showAllRows && (
+          <>
+            <ItemRow label="Storage" value={item.Storage} theme={theme} />
+            <ItemRow label="Counterparty" value={item.Counterparty} theme={theme} />
+            <ItemRow label="TTN" value={item.TTN} theme={theme} />
+            <ItemRow label="DateTime" value={new Date(item.DateTime).toLocaleDateString()} theme={theme} />
+            <ItemRow label="Summ" value={item.Summ} theme={theme} />
+            <ItemRow label="Currency" value={item.Currency} theme={theme} />
+            <ItemRow label="User" value={item.User} theme={theme} />
+          </>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export default function Index() {
   const [data] = useState(generateData());
