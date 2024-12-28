@@ -22,15 +22,43 @@ const Tab = createMaterialTopTabNavigator();
 const generateData = () =>
   Array.from({ length: 50 }, (_, index) => `Пример данных ${index + 1}`);
 
+const ItemRow = ({ label, value, theme }: { label: string; value: string | number; theme: string }) => (
+  <View style={{ flexDirection: "row", marginBottom: 4 }}>
+    <Text style={{ fontWeight: "bold", marginRight: 8, color: theme === "dark" ? "#fff" : "#000" }}>{label}:</Text>
+    <Text style={{color: theme === "dark" ? "#fff" : "#000" }}>{value}</Text>
+  </View>
+);
+
+const ListItem = ({ item, theme }: { item: any; theme: string }) => (
+  <TouchableOpacity style={styles.container}>
+    <View
+      style={
+        theme === "dark" ? [styles.card, styles.cardDark] : styles.card
+      }
+    >
+      <ItemRow label="Number" value={item.Number} theme={theme} />
+      <ItemRow label="Organization" value={item.Organization} theme={theme} />
+      <ItemRow label="Storage" value={item.Storage} theme={theme} />
+      <ItemRow label="Counterparty" value={item.Counterparty} theme={theme} />
+      <ItemRow label="TTN" value={item.TTN} theme={theme} />
+      <ItemRow
+        label="DateTime"
+        value={new Date(item.DateTime).toLocaleDateString()}
+        theme={theme}
+      />
+      <ItemRow label="Summ" value={item.Summ} theme={theme}/>
+      <ItemRow label="Currency" value={item.Currency} theme={theme} />
+      <ItemRow label="User" value={item.User} theme={theme}/>
+    </View>
+  </TouchableOpacity>
+);
+
 export default function Index() {
   const [data] = useState(generateData());
-  const { theme} = useTheme();
-  const isLightTheme = theme === 'light';
-  const statusBarStyle = isLightTheme ? 'dark-content' : 'light-content';
-  const statusBarBackgroundColor = isLightTheme ? '#F2F2F7' : '#1C1C1E';
-
-  useEffect(() => {
-  }, [theme]);
+  const { theme } = useTheme();
+  const isLightTheme = theme === "light";
+  const statusBarStyle = isLightTheme ? "dark-content" : "light-content";
+  const statusBarBackgroundColor = isLightTheme ? "#F2F2F7" : "#1C1C1E";
 
   const tabStyles = {
     tabBarStyle: {
@@ -43,29 +71,29 @@ export default function Index() {
 
   return (
     <>
-    <StatusBar
-            barStyle={statusBarStyle}
-            backgroundColor={statusBarBackgroundColor}
-          />
-      <SafeAreaView 
-        style={[styles.container, { backgroundColor: statusBarBackgroundColor }]} 
-        edges={['top', 'left', 'right']}
+      <StatusBar
+        barStyle={statusBarStyle}
+        backgroundColor={statusBarBackgroundColor}
+      />
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: statusBarBackgroundColor }]}
+        edges={["top", "left", "right"]}
       >
-      <Tab.Navigator screenOptions={tabStyles}>
-        <Tab.Screen name="Корзина">
-          {() => <ScreenBasket data={data} theme={theme} />}
-        </Tab.Screen>
-        <Tab.Screen name="Чеки">
-          {() => <ScreenCheque data={data} theme={theme} />}
-        </Tab.Screen>
-      </Tab.Navigator>
-    </SafeAreaView>
+        <Tab.Navigator screenOptions={tabStyles}>
+          <Tab.Screen name="Корзина">
+            {() => <ScreenBasket data={data} theme={theme} />}
+          </Tab.Screen>
+          <Tab.Screen name="Чеки">
+            {() => <ScreenCheque theme={theme} />}
+          </Tab.Screen>
+        </Tab.Navigator>
+      </SafeAreaView>
     </>
   );
 }
 
-function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
-  const [remoteData, setRemoteData] = useState<string[]>([]);
+function ScreenCheque({ theme }: { theme: string }) {
+  const [remoteData, setRemoteData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,7 +104,7 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
       const response = await axios.get(
         "https://65c29882f7e6ea59682b8fcd.mockapi.io/v1/hs/trade/ReceiptOfGoods/Authorization"
       );
-      setRemoteData(response.data.map((item: any) => item.Number)); // Пример: берем только поле `Number`
+      setRemoteData(response.data);
     } catch (err) {
       setError("Ошибка загрузки данных. Попробуйте снова.");
     } finally {
@@ -88,11 +116,6 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
     fetchData();
   }, []);
 
-  const textStyle =
-    theme === "dark"
-      ? [styles.textItem, styles.textItemDark]
-      : styles.textItem;
-
   const containerStyle =
     theme === "dark"
       ? [styles.flatListContainer, styles.flatListContainerDark]
@@ -100,39 +123,42 @@ function ScreenCheque({ data, theme }: { data: string[]; theme: string }) {
 
   if (loading) {
     return (
-      <View style={[containerStyle, { justifyContent: "center", alignItems: "center" }]}>
+      <View
+        style={[containerStyle, { justifyContent: "center", alignItems: "center" }]}
+      >
         <ActivityIndicator size="large" color={theme === "dark" ? "#fff" : "#000"} />
-        <Text style={textStyle}>Загрузка данных...</Text>
+        <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>
+          Загрузка данных...
+        </Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={[containerStyle, { justifyContent: "center", alignItems: "center" }]}>
-        <Text style={[textStyle, { color: "red" }]}>{error}</Text>
+      <View
+        style={[containerStyle, { justifyContent: "center", alignItems: "center" }]}
+      >
+        <Text style={{ color: "red" }}>{error}</Text>
         <Button title="Повторить" onPress={fetchData} />
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        style={containerStyle}
-        contentContainerStyle={{
-          paddingBottom: 20,
-        }}
-        data={remoteData}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text style={textStyle}>{item}</Text>
-        )}
-        keyboardShouldPersistTaps="handled"
-      />
-    </View>
+    <FlatList
+      style={containerStyle}
+      contentContainerStyle={{
+        paddingBottom: 20,
+      }}
+      data={remoteData}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => <ListItem item={item} theme={theme} />}
+      keyboardShouldPersistTaps="handled"
+    />
   );
 }
+
 
 
 function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
@@ -200,7 +226,11 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
           ]}
         >
           <TextInput
-            style={theme === "dark" ? [styles.searchInput, styles.inputDark] : styles.searchInput}
+            style={
+              theme === "dark"
+                ? [styles.searchInput, styles.inputDark]
+                : styles.searchInput
+            }
             placeholder="Поиск..."
             placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
             value={searchQuery}
@@ -233,10 +263,37 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  card: {
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  cardDark: {
+    borderColor: "#555",
+    backgroundColor: "#2C2C2C",
+    color: "#FFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 10,
+    elevation: 2,
+
   },
   wrapper: {
     flex: 1,
