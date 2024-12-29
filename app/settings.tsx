@@ -2,86 +2,97 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Appearance } from 'react-native';
 import { useTheme } from './theme-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function SettingsScreen() {
   const { theme, toggleTheme } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState('Automatic');
+  const [selectedTheme, setSelectedTheme] = useState('Автоматически');
 
   useEffect(() => {
     const initializeTheme = async () => {
       try {
         const storedTheme = await AsyncStorage.getItem('theme');
-
         if (storedTheme) {
-          setSelectedTheme(storedTheme);
-
-          if (storedTheme === 'Light' && theme !== 'light') {
-            toggleTheme();
-          } else if (storedTheme === 'Dark' && theme !== 'dark') {
-            toggleTheme(); 
+          if (storedTheme === 'Автоматически') {
+            setSelectedTheme('Автоматически');
+          } else {
+            setSelectedTheme(storedTheme === 'Светлая' ? 'Светлая' : 'Тёмная');
+          }
+          if (storedTheme === 'Автоматически') {
+            const systemTheme = Appearance.getColorScheme();
+            if (systemTheme && systemTheme !== theme) {
+              toggleTheme();
+            }
+          } else {
+            if (storedTheme === 'Светлая' && theme !== 'light') {
+              toggleTheme();
+            } else if (storedTheme === 'Тёмная' && theme !== 'dark') {
+              toggleTheme();
+            }
           }
         } else {
           const systemTheme = Appearance.getColorScheme();
-          setSelectedTheme('Automatic');
-
-          if (systemTheme !== theme) {
+          const defaultTheme = systemTheme || 'light';
+          setSelectedTheme('Автоматически');
+          if (defaultTheme !== theme) {
             toggleTheme();
           }
-
-          await AsyncStorage.setItem('theme', 'Automatic');
+          await AsyncStorage.setItem('theme', 'Автоматически');
         }
       } catch (error) {
-        console.error('Failed to load saved theme:', error);
+        console.error('Не удалось загрузить тему:', error);
       }
     };
 
     initializeTheme();
-  }, []);
+  }, [theme, toggleTheme]);
 
   const themes = [
-    { name: 'Automatic', icon: '◑' },
-    { name: 'Light', icon: '☀' },
-    { name: 'Dark', icon: '☾' },
+    { name: 'Автоматически', icon: 'adjust' },
+    { name: 'Светлая', icon: 'sun-o' },
+    { name: 'Тёмная', icon: 'moon-o' },
   ];
 
   const handleThemeChange = async (newTheme: string) => {
     try {
-      if (newTheme === 'Automatic') {
+      if (newTheme === 'Автоматически') {
         const systemTheme = Appearance.getColorScheme();
         setSelectedTheme(newTheme);
-
         if (systemTheme !== theme) {
           toggleTheme();
         }
-
-        await AsyncStorage.setItem('theme', 'Automatic');
+        await AsyncStorage.setItem('theme', 'Автоматически');
       } else {
-        const isDark = newTheme === 'Dark';
+        const isDark = newTheme === 'Тёмная';
         const currentIsDark = theme === 'dark';
-
         if (isDark !== currentIsDark) {
           toggleTheme();
         }
-
         setSelectedTheme(newTheme);
-        await AsyncStorage.setItem('theme', newTheme);
+        await AsyncStorage.setItem('theme', newTheme === 'Светлая' ? 'Светлая' : 'Тёмная');
       }
     } catch (error) {
-      console.error('Failed to save selected theme:', error);
+      console.error('Не удалось сохранить выбранную тему:', error);
     }
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme === 'light' ? '#F9F9F9' : '#1c1c1c' }]}>
-      <Text style={[styles.subtitle, { color: theme === 'light' ? '#000' : '#fff' }]}>Theme</Text>
+      <Text style={[styles.subtitle, { color: theme === 'light' ? '#000' : '#fff' }]}>Тема</Text>
       <View style={[styles.optionsContainer, { backgroundColor: theme === 'light' ? '#FFF' : '#333' }]}>
-        {themes.map((t) => (
+        {themes.map((t, index) => (
           <TouchableOpacity
             key={t.name}
-            style={[styles.option, { borderBottomColor: theme === 'light' ? '#ddd' : '#555' }]}
+            style={[
+              styles.option,
+              {
+                borderBottomWidth: index === themes.length - 1 ? 0 : 1,
+                borderBottomColor: theme === 'light' ? '#ddd' : '#555',
+              },
+            ]}
             onPress={() => handleThemeChange(t.name)}
           >
-            <Text style={[styles.icon, { color: theme === 'light' ? '#000' : '#fff' }]}>{t.icon}</Text>
+            <Icon name={t.icon} size={20} color={theme === 'light' ? '#000' : '#fff'} style={styles.icon} />
             <Text style={[styles.optionText, { color: theme === 'light' ? '#000' : '#fff' }]}>{t.name}</Text>
             <View style={[styles.radio, { borderColor: theme === 'light' ? '#333' : '#fff' }]}>
               {selectedTheme === t.name && (
@@ -92,8 +103,7 @@ export default function SettingsScreen() {
         ))}
       </View>
       <Text style={[styles.note, { color: theme === 'light' ? '#888' : '#ddd' }]}>
-        Automatic is only supported on operating systems that allow you to
-        control the system-wide color scheme.
+        Автоматическая тема поддерживается только на операционных системах, которые позволяют управлять цветовой схемой всей системы.
       </Text>
     </View>
   );
@@ -102,47 +112,54 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   subtitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 20,
+    textAlign: 'left',
   },
   optionsContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
+    borderRadius: 12,
+    marginBottom: 20,
+    paddingVertical: 8,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
   },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
   },
   optionText: {
     flex: 1,
     fontSize: 16,
+    fontWeight: '500',
   },
   icon: {
-    fontSize: 18,
-    marginRight: 10,
+    marginRight: 15,
   },
   radio: {
-    height: 20,
-    width: 20,
-    borderRadius: 10,
+    height: 22,
+    width: 22,
+    borderRadius: 11,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    height: 10,
-    width: 10,
-    borderRadius: 5,
+    height: 12,
+    width: 12,
+    borderRadius: 6,
   },
   note: {
     fontSize: 14,
+    textAlign: 'center',
     marginTop: 20,
+    color: '#888',
+    lineHeight: 20,
   },
 });

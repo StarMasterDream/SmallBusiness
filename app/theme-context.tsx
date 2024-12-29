@@ -8,7 +8,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: "light",
+  theme: "light", // по умолчанию светлая тема
   toggleTheme: () => {},
 });
 
@@ -25,20 +25,20 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
         const storedTheme = await AsyncStorage.getItem("theme");
 
         if (storedTheme) {
-          if (storedTheme === "Automatic") {
+          if (storedTheme === "Автоматически") {
             const systemTheme = Appearance.getColorScheme();
             setTheme(systemTheme || "light");
           } else {
-            setTheme(storedTheme);
+            setTheme(storedTheme === "Светлая" ? "light" : "dark");
           }
         } else {
           const systemTheme = Appearance.getColorScheme();
           const defaultTheme = systemTheme || "light";
           setTheme(defaultTheme);
-          await AsyncStorage.setItem("theme", defaultTheme === "light" ? "Light" : "Dark");
+          await AsyncStorage.setItem("theme", defaultTheme === "light" ? "Светлая" : "Тёмная");
         }
       } catch (error) {
-        console.error("Failed to load theme:", error);
+        console.error("Не удалось загрузить тему:", error);
       }
     };
 
@@ -46,7 +46,7 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     const listener = Appearance.addChangeListener(({ colorScheme }) => {
       AsyncStorage.getItem("theme").then((storedTheme) => {
-        if (storedTheme === "Automatic") {
+        if (storedTheme === "Автоматически") {
           setTheme(colorScheme || "light");
         }
       });
@@ -59,9 +59,9 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     try {
-      await AsyncStorage.setItem("theme", newTheme === "light" ? "Light" : "Dark");
+      await AsyncStorage.setItem("theme", newTheme === "light" ? "Светлая" : "Тёмная");
     } catch (error) {
-      console.error("Failed to save theme:", error);
+      console.error("Не удалось сохранить тему:", error);
     }
   };
 
