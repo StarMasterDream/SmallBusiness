@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useTheme } from "../theme-context";
 import axios from "axios";
-import Modal from "react-native-modal"; // Импорт react-native-modal
+import Modal from "react-native-modal";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -216,14 +216,14 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
         onBackdropPress={closeModal}
         onSwipeComplete={closeModal}
         swipeDirection="down"
-        style={{ margin: 0 }} // Убираем отступы вокруг модального окна
+        style={{ margin: 0 }}
       >
         <SafeAreaView
           style={[
             styles.modalContainer,
             theme === "dark" ? styles.modalBackgroundDark : null,
           ]}
-          edges={["top", "bottom"]} // Учитываем безопасные области сверху и снизу
+          edges={["top", "bottom"]}
         >
           <KeyboardAvoidingView
             style={{ flex: 1 }}
