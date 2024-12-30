@@ -34,7 +34,7 @@ type RemoteData = {
 };
 
 const generateData = () =>
-  Array.from({ length: 50 }, (_, index) => `Пример данных ${index + 1}`);
+  Array.from({ length: 5000 }, (_, index) => `Пример данных ${index + 1}`);
 
 const ItemRow = ({ label, value, theme }: { label: string; value: string | number; theme: string }) => (
   <View style={{ flexDirection: "row", marginBottom: 4 }}>
@@ -246,7 +246,7 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
             />
             <FlatList
               style={{ flex: 1 }}
-              contentContainerStyle={{ paddingBottom: 20 }}
+              contentContainerStyle={{ paddingBottom: 60 }}
               data={filteredData}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
@@ -264,7 +264,13 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
               initialNumToRender={10}
               maxToRenderPerBatch={10}
             />
-            <Button title="Закрыть" onPress={closeModal} />
+            <TouchableOpacity
+  style={[styles.closeButton, theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight]}
+  onPress={closeModal}
+>
+  <Text style={styles.closeButtonText}>Закрыть</Text>
+</TouchableOpacity>
+
           </View>
         </KeyboardAvoidingView>
       </Modal>
@@ -332,7 +338,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: "#FFFFFF",
-  },  
+  },
   modalBackgroundDark: {
     backgroundColor: "#1E1E1E",
   },
@@ -396,5 +402,27 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  closeButton: {
+    marginTop: 16, // Добавляем отступ сверху
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#FF9800",
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  
+  closeButtonDark: {
+    backgroundColor: "#333", // Темная тема для кнопки
+  },
+  
+  closeButtonLight: {
+    backgroundColor: "#6200EE", // Светлая тема для кнопки
   },
 });
