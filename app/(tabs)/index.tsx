@@ -11,6 +11,7 @@ import {
   StatusBar,
   ActivityIndicator,
   KeyboardAvoidingView,
+  Animated
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -29,7 +30,7 @@ type RemoteData = {
   TTN: string;
   DateTime: string;
   Summ: number;
-  Currency: string;
+  Curency: string;
   User: string;
 };
 
@@ -37,9 +38,18 @@ const generateData = () =>
   Array.from({ length: 5000 }, (_, index) => `Пример данных ${index + 1}`);
 
 const ItemRow = ({ label, value, theme }: { label: string; value: string | number; theme: string }) => (
-  <View style={{ flexDirection: "row", marginBottom: 4 }}>
+  <View style={{ flexDirection: "row", marginBottom: 4, maxWidth: '100%' }}>
     <Text style={{ fontWeight: "bold", marginRight: 8, color: theme === "dark" ? "#fff" : "#000" }}>{label}:</Text>
-    <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>{value}</Text>
+    <Text
+      style={{
+        color: theme === "dark" ? "#fff" : "#000",
+        flexShrink: 1,
+      }}
+      numberOfLines={1} 
+      ellipsizeMode="tail"
+    >
+      {value}
+    </Text>
   </View>
 );
 
@@ -62,7 +72,7 @@ const ListItem = ({ item, theme }: { item: RemoteData; theme: string }) => {
             <ItemRow label="TTN" value={item.TTN} theme={theme} />
             <ItemRow label="DateTime" value={new Date(item.DateTime).toLocaleDateString()} theme={theme} />
             <ItemRow label="Summ" value={item.Summ} theme={theme} />
-            <ItemRow label="Currency" value={item.Currency} theme={theme} />
+            <ItemRow label="Currency" value={item.Curency} theme={theme} />
             <ItemRow label="User" value={item.User} theme={theme} />
           </>
         )}
@@ -246,7 +256,6 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
             />
             <FlatList
               style={{ flex: 1 }}
-              contentContainerStyle={{ paddingBottom: 60 }}
               data={filteredData}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
@@ -265,11 +274,11 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
               maxToRenderPerBatch={10}
             />
             <TouchableOpacity
-  style={[styles.closeButton, theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight]}
-  onPress={closeModal}
->
-  <Text style={styles.closeButtonText}>Закрыть</Text>
-</TouchableOpacity>
+              style={[styles.closeButton, theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight]}
+              onPress={closeModal}
+            >
+              <Text style={styles.closeButtonText}>Закрыть</Text>
+            </TouchableOpacity>
 
           </View>
         </KeyboardAvoidingView>
@@ -333,7 +342,7 @@ const styles = StyleSheet.create({
   modalWrapper: {
     margin: 0,
     justifyContent: "flex-end",
-  },  
+  },
   modalContainer: {
     flex: 1,
     padding: 16,
@@ -404,7 +413,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeButton: {
-    marginTop: 16, // Добавляем отступ сверху
+    marginTop: 16,
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: "#FF9800",
@@ -419,10 +428,10 @@ const styles = StyleSheet.create({
   },
   
   closeButtonDark: {
-    backgroundColor: "#333", // Темная тема для кнопки
+    backgroundColor: "#333",
   },
   
   closeButtonLight: {
-    backgroundColor: "#6200EE", // Светлая тема для кнопки
+    backgroundColor: "#6200EE",
   },
 });
