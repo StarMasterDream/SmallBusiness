@@ -17,6 +17,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useTheme } from "../theme-context";
 import axios from "axios";
 import Modal from "react-native-modal";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -156,7 +157,6 @@ function ScreenCheque({ theme }: { theme: string }) {
       data={remoteData}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => <ListItem item={item} theme={theme} />}
-      keyboardShouldPersistTaps="handled"
     />
   );
 }
@@ -164,6 +164,8 @@ function ScreenCheque({ theme }: { theme: string }) {
 function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const insets = useSafeAreaInsets();
 
   const closeModal = () => {
     setModalVisible(false);
@@ -201,7 +203,6 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
             {item}
           </Text>
         )}
-        keyboardShouldPersistTaps="handled"
       />
 
       <TouchableOpacity
@@ -210,24 +211,26 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
       >
         <Text style={{ color: "#fff", fontSize: 24 }}>+</Text>
       </TouchableOpacity>
-
       <Modal
         isVisible={modalVisible}
-        onBackdropPress={closeModal}
         onSwipeComplete={closeModal}
         swipeDirection="down"
-        style={{ margin: 0 }}
+        style={styles.modalWrapper}
       >
-        <SafeAreaView
-          style={[
-            styles.modalContainer,
-            theme === "dark" ? styles.modalBackgroundDark : null,
-          ]}
-          edges={["top", "bottom"]}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+          <View
+            style={[
+              styles.modalContainer,
+              theme === "dark" ? styles.modalBackgroundDark : null,
+              {
+                paddingTop: insets.top + 16,
+                paddingBottom: insets.bottom + 16,
+                paddingHorizontal: 16,
+              },
+            ]}
           >
             <TextInput
               style={
@@ -241,7 +244,7 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
               onChangeText={setSearchQuery}
             />
             <FlatList
-              style={containerStyle}
+              style={{ flex: 1 }}
               contentContainerStyle={{ paddingBottom: 20 }}
               data={filteredData}
               keyExtractor={(item, index) => index.toString()}
@@ -259,13 +262,12 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
               keyboardShouldPersistTaps="handled"
             />
             <Button title="Закрыть" onPress={closeModal} />
-          </KeyboardAvoidingView>
-        </SafeAreaView>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
 }
-
 
 const getCardStyle = (theme: string) => [
   styles.card,
@@ -319,11 +321,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 6,
   },
+  modalWrapper: {
+    margin: 0,
+    justifyContent: "flex-end",
+  },  
   modalContainer: {
     flex: 1,
-    padding: 20,
+    padding: 16,
     backgroundColor: "#FFFFFF",
-  },
+  },  
   modalBackgroundDark: {
     backgroundColor: "#1E1E1E",
   },
