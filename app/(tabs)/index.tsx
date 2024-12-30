@@ -157,6 +157,8 @@ function ScreenCheque({ theme }: { theme: string }) {
       data={remoteData}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => <ListItem item={item} theme={theme} />}
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
     />
   );
 }
@@ -203,6 +205,9 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
             {item}
           </Text>
         )}
+        keyboardShouldPersistTaps="handled"
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
       />
 
       <TouchableOpacity
@@ -222,15 +227,11 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <View
-            style={[
-              styles.modalContainer,
-              theme === "dark" ? styles.modalBackgroundDark : null,
-              {
-                paddingTop: insets.top + 16,
-                paddingBottom: insets.bottom + 16,
-                paddingHorizontal: 16,
-              },
-            ]}
+            style={[styles.modalContainer, theme === "dark" ? styles.modalBackgroundDark : null, {
+              paddingTop: insets.top + 16,
+              paddingBottom: insets.bottom + 16,
+              paddingHorizontal: 16,
+            }]}
           >
             <TextInput
               style={
@@ -260,6 +261,8 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
                 </Text>
               )}
               keyboardShouldPersistTaps="handled"
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
             />
             <Button title="Закрыть" onPress={closeModal} />
           </View>
