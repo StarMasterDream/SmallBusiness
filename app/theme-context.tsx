@@ -8,7 +8,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: "light", // по умолчанию светлая тема
+  theme: "Автоматически",
   toggleTheme: () => {},
 });
 
@@ -17,7 +17,7 @@ interface ThemeProviderProps {
 }
 
 const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("Автоматически");
 
   useEffect(() => {
     const loadTheme = async () => {
@@ -34,8 +34,8 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
         } else {
           const systemTheme = Appearance.getColorScheme();
           const defaultTheme = systemTheme || "light";
-          setTheme(defaultTheme);
-          await AsyncStorage.setItem("theme", defaultTheme === "light" ? "Светлая" : "Тёмная");
+          setTheme("Автоматически");
+          await AsyncStorage.setItem("theme", "Автоматически");
         }
       } catch (error) {
         console.error("Не удалось загрузить тему:", error);

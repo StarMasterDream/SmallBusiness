@@ -12,18 +12,16 @@ export default function SettingsScreen() {
     const initializeTheme = async () => {
       try {
         const storedTheme = await AsyncStorage.getItem('theme');
+
         if (storedTheme) {
           if (storedTheme === 'Автоматически') {
             setSelectedTheme('Автоматически');
-          } else {
-            setSelectedTheme(storedTheme === 'Светлая' ? 'Светлая' : 'Тёмная');
-          }
-          if (storedTheme === 'Автоматически') {
             const systemTheme = Appearance.getColorScheme();
             if (systemTheme && systemTheme !== theme) {
               toggleTheme();
             }
           } else {
+            setSelectedTheme(storedTheme === 'Светлая' ? 'Светлая' : 'Тёмная');
             if (storedTheme === 'Светлая' && theme !== 'light') {
               toggleTheme();
             } else if (storedTheme === 'Тёмная' && theme !== 'dark') {
@@ -32,9 +30,8 @@ export default function SettingsScreen() {
           }
         } else {
           const systemTheme = Appearance.getColorScheme();
-          const defaultTheme = systemTheme || 'light';
           setSelectedTheme('Автоматически');
-          if (defaultTheme !== theme) {
+          if (systemTheme && systemTheme !== theme) {
             toggleTheme();
           }
           await AsyncStorage.setItem('theme', 'Автоматически');
