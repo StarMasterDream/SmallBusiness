@@ -36,9 +36,27 @@ type RemoteData = {
 const generateData = () =>
   Array.from({ length: 5000 }, (_, index) => `Пример данных ${index + 1}`);
 
-const ItemRow = ({ label, value, theme, showAllRows }: { label: string; value: string | number; theme: string, showAllRows: boolean }) => (
-  <View style={{ flexDirection: "row", marginBottom: 4, maxWidth: '100%' }}>
-    <Text style={{ fontWeight: "bold", marginRight: 8, color: theme === "dark" ? "#fff" : "#000" }}>{label}:</Text>
+const ItemRow = ({
+  label,
+  value,
+  theme,
+  showAllRows,
+}: {
+  label: string;
+  value: string | number;
+  theme: string;
+  showAllRows: boolean;
+}) => (
+  <View style={{ flexDirection: "row", marginBottom: 4, maxWidth: "100%" }}>
+    <Text
+      style={{
+        fontWeight: "bold",
+        marginRight: 8,
+        color: theme === "dark" ? "#fff" : "#000",
+      }}
+    >
+      {label}:
+    </Text>
     <Text
       style={{
         color: theme === "dark" ? "#fff" : "#000",
@@ -51,7 +69,6 @@ const ItemRow = ({ label, value, theme, showAllRows }: { label: string; value: s
     </Text>
   </View>
 );
-
 
 const ListItem = ({ item, theme }: { item: RemoteData; theme: string }) => {
   const [showAllRows, setShowAllRows] = useState(false);
@@ -176,6 +193,7 @@ function ScreenCheque({ theme }: { theme: string }) {
 function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cartItems, setCartItems] = useState<{ item: string; quantity: number }[]>([]);
 
   const insets = useSafeAreaInsets();
 
@@ -192,6 +210,33 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
     [data, searchQuery]
   );
 
+  const addToCart = (item: string) => {
+    setCartItems((prev) => {
+      const existingItem = prev.find((cartItem) => cartItem.item === item);
+      if (existingItem) {
+        return prev.map((cartItem) =>
+          cartItem.item === item
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prev, { item, quantity: 1 }];
+      }
+    });
+  };
+
+  const updateQuantity = (item: string, change: number) => {
+    setCartItems((prev) =>
+      prev
+        .map((cartItem) =>
+          cartItem.item === item
+            ? { ...cartItem, quantity: cartItem.quantity + change }
+            : cartItem
+        )
+        .filter((cartItem) => cartItem.quantity > 0)
+    );
+  };
+
   const containerStyle =
     theme === "dark"
       ? [styles.flatListContainer, styles.flatListContainerDark]
@@ -199,27 +244,54 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <FlatList
-        style={containerStyle}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        data={filteredData}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text
-            style={
-              theme === "dark"
-                ? [styles.textItem, styles.textItemDark]
-                : styles.textItem
-            }
-          >
-            {item}
-          </Text>
-        )}
-        keyboardShouldPersistTaps="handled"
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
-      />
-
+      {cartItems.length === 0 ? (
+        <View style={[
+          styles.emptyBasketContainer,
+          { backgroundColor: theme === "dark" ? "#1E1E1E" : "#F5F5F5" },
+        ]}
+        >
+          <Text style={[
+  styles.emptyBasketText,
+  { color: theme === "dark" ? "#FFF" : "#999" },
+]}
+>Корзина пуста</Text>
+        </View>
+      ) : (
+        <FlatList
+          style={containerStyle}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          data={cartItems}
+          keyExtractor={(cartItem) => cartItem.item}
+          renderItem={({ item }) => (
+            <View style={styles.cartItem}>
+              <Text
+                style={
+                  theme === "dark"
+                    ? [styles.textItem, styles.textItemDark]
+                    : styles.textItem
+                }
+              >
+                {item.item}
+              </Text>
+              <View style={styles.quantityControls}>
+                <TouchableOpacity
+                  onPress={() => updateQuantity(item.item, -1)}
+                  style={styles.quantityButton}
+                >
+                  <Text style={styles.quantityButtonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.quantityText}>{item.quantity}</Text>
+                <TouchableOpacity
+                  onPress={() => updateQuantity(item.item, 1)}
+                  style={styles.quantityButton}
+                >
+                  <Text style={styles.quantityButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        />
+      )}
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={() => setModalVisible(true)}
@@ -237,11 +309,15 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <View
-            style={[styles.modalContainer, theme === "dark" ? styles.modalBackgroundDark : null, {
-              paddingTop: insets.top + 16,
-              paddingBottom: insets.bottom + 16,
-              paddingHorizontal: 16,
-            }]}
+            style={[
+              styles.modalContainer,
+              theme === "dark" ? styles.modalBackgroundDark : null,
+              {
+                paddingTop: insets.top + 16,
+                paddingBottom: insets.bottom + 16,
+                paddingHorizontal: 16,
+              },
+            ]}
           >
             <TextInput
               style={
@@ -259,27 +335,36 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
               data={filteredData}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
-                <Text
-                  style={
-                    theme === "dark"
-                      ? [styles.textItem, styles.textItemDark]
-                      : styles.textItem
-                  }
+                <TouchableOpacity
+                  onPress={() => {
+                    addToCart(item);
+                    closeModal();
+                  }}
                 >
-                  {item}
-                </Text>
+                  <Text
+                    style={
+                      theme === "dark"
+                        ? [styles.textItem, styles.textItemDark]
+                        : styles.textItem
+                    }
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
               )}
               keyboardShouldPersistTaps="handled"
               initialNumToRender={10}
               maxToRenderPerBatch={10}
             />
             <TouchableOpacity
-              style={[styles.closeButton, theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight]}
+              style={[
+                styles.closeButton,
+                theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight,
+              ]}
               onPress={closeModal}
             >
               <Text style={styles.closeButtonText}>Закрыть</Text>
             </TouchableOpacity>
-
           </View>
         </KeyboardAvoidingView>
       </Modal>
@@ -303,41 +388,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     elevation: 2,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
   cardDark: {
-    borderColor: "#555",
     backgroundColor: "#2C2C2C",
-    color: "#FFF",
+    borderColor: "#555",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 10,
-    elevation: 2,
-  },
-  floatingButton: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FF9800",
-    right: 20,
-    bottom: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 6,
   },
   modalWrapper: {
     margin: 0,
@@ -370,10 +430,6 @@ const styles = StyleSheet.create({
     borderColor: "#555",
     backgroundColor: "#2C2C2C",
     color: "#FFF",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
   },
   textItem: {
     fontSize: 16,
@@ -386,17 +442,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
   },
   textItemDark: {
     backgroundColor: "#2C2C2C",
     color: "#FFF",
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 2,
   },
   flatListContainer: {
     flex: 1,
@@ -419,19 +469,78 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF9800",
     borderRadius: 8,
     alignItems: "center",
-    justifyContent: "center",
   },
   closeButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
-  
   closeButtonDark: {
     backgroundColor: "#333",
   },
-  
   closeButtonLight: {
     backgroundColor: "#6200EE",
   },
+  emptyBasketContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyBasketText: {
+    fontSize: 18,
+    fontStyle: "italic",
+  },  
+  cartItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    margin: 12,
+    padding: 15,
+    borderRadius: 12,
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  quantityControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minWidth: 100,
+    maxWidth: 150,
+  },
+  quantityButton: {
+    backgroundColor: "#FF9800",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  quantityButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginHorizontal: 8,
+    textAlign: "center",
+    minWidth: 24,
+  },
+  floatingButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#FF9800",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+  },  
 });
