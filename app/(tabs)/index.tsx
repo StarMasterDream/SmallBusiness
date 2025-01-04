@@ -34,7 +34,7 @@ type RemoteData = {
 };
 
 const generateData = () =>
-  Array.from({ length: 5000 }, (_, index) => `Пример данных ${index + 1}`);
+  Array.from({ length: 5000 }, (_, index) => `Пример данных ${index + 1} обьект`);
 
 const ItemRow = ({
   label,
@@ -193,7 +193,11 @@ function ScreenCheque({ theme }: { theme: string }) {
 function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [cartItems, setCartItems] = useState<{ item: string; quantity: number }[]>([]);
+  const [cartItems, setCartItems] = useState<{
+    item: string;
+    quantity: number;
+    expanded: boolean;
+  }[]>([]);
 
   const insets = useSafeAreaInsets();
 
@@ -220,7 +224,7 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
             : cartItem
         );
       } else {
-        return [...prev, { item, quantity: 1 }];
+        return [...prev, { item, quantity: 1, expanded: false }];
       }
     });
   };
@@ -237,6 +241,16 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
     );
   };
 
+  const toggleText = (item: string) => {
+    setCartItems((prev) =>
+      prev.map((cartItem) =>
+        cartItem.item === item
+          ? { ...cartItem, expanded: !cartItem.expanded }
+          : cartItem
+      )
+    );
+  };
+
   const containerStyle =
     theme === "dark"
       ? [styles.flatListContainer, styles.flatListContainerDark]
@@ -245,16 +259,20 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
   return (
     <View style={{ flex: 1 }}>
       {cartItems.length === 0 ? (
-        <View style={[
-          styles.emptyBasketContainer,
-          { backgroundColor: theme === "dark" ? "#1E1E1E" : "#F5F5F5" },
-        ]}
+        <View
+          style={[
+            styles.emptyBasketContainer,
+            { backgroundColor: theme === "dark" ? "#1E1E1E" : "#F5F5F5" },
+          ]}
         >
-          <Text style={[
-  styles.emptyBasketText,
-  { color: theme === "dark" ? "#FFF" : "#999" },
-]}
->Корзина пуста</Text>
+          <Text
+            style={[
+              styles.emptyBasketText,
+              { color: theme === "dark" ? "#FFF" : "#999" },
+            ]}
+          >
+            Корзина пуста
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -264,30 +282,59 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
           keyExtractor={(cartItem) => cartItem.item}
           renderItem={({ item }) => (
             <View style={styles.cartItem}>
-              <Text
-                style={
-                  theme === "dark"
-                    ? [styles.textItem, styles.textItemDark]
-                    : styles.textItem
-                }
+              <TouchableOpacity
+                style={styles.textContainer}
+                onPress={() => toggleText(item.item)}
               >
-                {item.item}
-              </Text>
+                <Text
+                  style={
+                    theme === "dark"
+                      ? [styles.textItem, styles.textItemDark]
+                      : styles.textItem
+                  }
+                  numberOfLines={item.expanded ? undefined : 1}
+                  ellipsizeMode={item.expanded ? undefined : "tail"}
+                >
+                  {item.item}
+                </Text>
+              </TouchableOpacity>
               <View style={styles.quantityControls}>
-                <TouchableOpacity
-                  onPress={() => updateQuantity(item.item, -1)}
-                  style={styles.quantityButton}
-                >
-                  <Text style={styles.quantityButtonText}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.quantityText}>{item.quantity}</Text>
-                <TouchableOpacity
-                  onPress={() => updateQuantity(item.item, 1)}
-                  style={styles.quantityButton}
-                >
-                  <Text style={styles.quantityButtonText}>+</Text>
-                </TouchableOpacity>
-              </View>
+              <View style={{ alignItems: "center" }}>
+  <Text
+    style={
+      theme === "dark"
+        ? [styles.quantityLabel, styles.quantityTextDark]
+        : styles.quantityLabel
+    }
+  >
+    Количество
+  </Text>
+  <View style={styles.quantityControls}>
+    <TouchableOpacity
+      onPress={() => updateQuantity(item.item, -1)}
+      style={styles.quantityButton}
+    >
+      <Text style={styles.quantityButtonText}>-</Text>
+    </TouchableOpacity>
+    <Text
+      style={
+        theme === "dark"
+          ? [styles.quantityText, styles.quantityTextDark]
+          : styles.quantityText
+      }
+    >
+      {item.quantity}
+    </Text>
+    <TouchableOpacity
+      onPress={() => updateQuantity(item.item, 1)}
+      style={styles.quantityButton}
+    >
+      <Text style={styles.quantityButtonText}>+</Text>
+    </TouchableOpacity>
+  </View>
+</View>
+
+</View>
             </View>
           )}
         />
@@ -359,7 +406,9 @@ function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
             <TouchableOpacity
               style={[
                 styles.closeButton,
-                theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight,
+                theme === "dark"
+                  ? styles.closeButtonDark
+                  : styles.closeButtonLight,
               ]}
               onPress={closeModal}
             >
@@ -381,6 +430,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  textContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
   card: {
     backgroundColor: "#FFF",
     borderRadius: 8,
@@ -398,6 +451,12 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.4,
     shadowRadius: 4,
+  },
+  quantityLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
   },
   modalWrapper: {
     margin: 0,
@@ -493,16 +552,6 @@ const styles = StyleSheet.create({
   cartItem: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    margin: 12,
-    padding: 15,
-    borderRadius: 12,
-    backgroundColor: "#ffffff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   quantityControls: {
     flexDirection: "row",
@@ -530,6 +579,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
     textAlign: "center",
     minWidth: 24,
+  },
+  quantityTextDark: {
+    color: "#FFF",
   },
   floatingButton: {
     position: "absolute",
