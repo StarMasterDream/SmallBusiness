@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -6,20 +6,18 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  Button,
   Platform,
-  StatusBar,
-  ActivityIndicator,
   KeyboardAvoidingView,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useTheme } from "../theme-context";
-import axios from "axios";
 import Modal from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-function ScreenBasket({ data, theme }: { data: string[]; theme: string }) {
+const generateData = () =>
+  Array.from({ length: 5000 }, (_, index) => `Пример данных ${index + 1} обьект`);
+
+
+function ScreenBasket({ theme }: { theme: string }) {
+  const [data] = useState(generateData());
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<{

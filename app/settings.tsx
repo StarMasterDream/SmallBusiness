@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function SettingsScreen() {
   const { theme, toggleTheme } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState('Автоматически');
+  const [selectedTheme, setSelectedTheme] = useState('automatic');
 
   useEffect(() => {
     const initializeTheme = async () => {
@@ -14,30 +14,30 @@ export default function SettingsScreen() {
         const storedTheme = await AsyncStorage.getItem('theme');
 
         if (storedTheme) {
-          if (storedTheme === 'Автоматически') {
-            setSelectedTheme('Автоматически');
+          if (storedTheme === 'automatic') {
+            setSelectedTheme('automatic');
             const systemTheme = Appearance.getColorScheme();
             if (systemTheme && systemTheme !== theme) {
               toggleTheme();
             }
           } else {
-            setSelectedTheme(storedTheme === 'Светлая' ? 'Светлая' : 'Тёмная');
-            if (storedTheme === 'Светлая' && theme !== 'light') {
+            setSelectedTheme(storedTheme === 'light' ? 'light' : 'dark');
+            if (storedTheme === 'light' && theme !== 'light') {
               toggleTheme();
-            } else if (storedTheme === 'Тёмная' && theme !== 'dark') {
+            } else if (storedTheme === 'dark' && theme !== 'dark') {
               toggleTheme();
             }
           }
         } else {
           const systemTheme = Appearance.getColorScheme();
-          setSelectedTheme('Автоматически');
+          setSelectedTheme('automatic');
           if (systemTheme && systemTheme !== theme) {
             toggleTheme();
           }
-          await AsyncStorage.setItem('theme', 'Автоматически');
+          await AsyncStorage.setItem('theme', 'automatic');
         }
       } catch (error) {
-        console.error('Не удалось загрузить тему:', error);
+        console.error('Failed to load theme:', error);
       }
     };
 
@@ -45,31 +45,31 @@ export default function SettingsScreen() {
   }, [theme, toggleTheme]);
 
   const themes = [
-    { name: 'Автоматически', icon: 'adjust' },
-    { name: 'Светлая', icon: 'sun-o' },
-    { name: 'Тёмная', icon: 'moon-o' },
+    { name: 'Автоматически', title: 'automatic', icon: 'adjust' },
+    { name: 'Светлая', title: 'light', icon: 'sun-o' },
+    { name: 'Тёмная', title: 'dark', icon: 'moon-o' },
   ];
 
   const handleThemeChange = async (newTheme: string) => {
     try {
-      if (newTheme === 'Автоматически') {
+      if (newTheme === 'automatic') {
         const systemTheme = Appearance.getColorScheme();
         setSelectedTheme(newTheme);
         if (systemTheme !== theme) {
           toggleTheme();
         }
-        await AsyncStorage.setItem('theme', 'Автоматически');
+        await AsyncStorage.setItem('theme', 'automatic');
       } else {
-        const isDark = newTheme === 'Тёмная';
+        const isDark = newTheme === 'dark';
         const currentIsDark = theme === 'dark';
         if (isDark !== currentIsDark) {
           toggleTheme();
         }
         setSelectedTheme(newTheme);
-        await AsyncStorage.setItem('theme', newTheme === 'Светлая' ? 'Светлая' : 'Тёмная');
+        await AsyncStorage.setItem('theme', newTheme === 'light' ? 'light' : 'dark');
       }
     } catch (error) {
-      console.error('Не удалось сохранить выбранную тему:', error);
+      console.error('Failed to save selected theme:', error);
     }
   };
 
@@ -79,7 +79,7 @@ export default function SettingsScreen() {
       <View style={[styles.optionsContainer, { backgroundColor: theme === 'light' ? '#FFF' : '#333' }]}>
         {themes.map((t, index) => (
           <TouchableOpacity
-            key={t.name}
+            key={t.title}
             style={[
               styles.option,
               {
@@ -87,12 +87,12 @@ export default function SettingsScreen() {
                 borderBottomColor: theme === 'light' ? '#ddd' : '#555',
               },
             ]}
-            onPress={() => handleThemeChange(t.name)}
+            onPress={() => handleThemeChange(t.title)}
           >
             <Icon name={t.icon} size={20} color={theme === 'light' ? '#000' : '#fff'} style={styles.icon} />
             <Text style={[styles.optionText, { color: theme === 'light' ? '#000' : '#fff' }]}>{t.name}</Text>
             <View style={[styles.radio, { borderColor: theme === 'light' ? '#333' : '#fff' }]}>
-              {selectedTheme === t.name && (
+              {selectedTheme === t.title && (
                 <View style={[styles.radioInner, { backgroundColor: theme === 'light' ? '#333' : '#fff' }]} />
               )}
             </View>
@@ -100,7 +100,7 @@ export default function SettingsScreen() {
         ))}
       </View>
       <Text style={[styles.note, { color: theme === 'light' ? '#888' : '#ddd' }]}>
-        Автоматическая тема поддерживается только на операционных системах, которые позволяют управлять цветовой схемой всей системы.
+        Автоматическая тема поддерживается только в операционных системах, которые позволяют управлять цветовой схемой на уровне всей системы.
       </Text>
     </View>
   );
