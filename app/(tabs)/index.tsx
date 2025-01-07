@@ -3,8 +3,8 @@ import { StyleSheet, Platform, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useTheme } from "../theme-context";
-import ScreenCheque from "../Screens/ScreenCheque";
-import ScreenBasket from "../Screens/ScreenBasket";
+import ScreenCheque from "../screens/ScreenCheque";
+import ScreenBasket from "../screens/ScreenBasket";
 
 const Tab = createMaterialTopTabNavigator();
 

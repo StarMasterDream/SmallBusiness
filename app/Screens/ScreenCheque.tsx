@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList } from "react-native";
 import axios from "axios";
-import ListItem from "../Components/ListItem";
-import LoadingView from "../Components/LoadingView";
-import ErrorView from "../Components/ErrorView";
-import { RemoteData } from "../Components/types";
+import ListItem from "../components/ListItem";
+import LoadingView from "../components/LoadingView";
+import ErrorView from "../components/ErrorView";
+import { RemoteData } from "../components/types";
 
 
 const ScreenCheque = ({ theme }: { theme: string }) => {
