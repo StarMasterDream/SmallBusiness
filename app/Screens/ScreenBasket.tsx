@@ -14,6 +14,14 @@ import ModalContent from "../components/ModalContent";
 import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
 
+interface Group {
+  Kod: string;
+  GUID: string;
+  Name: string;
+  itGroup: boolean;
+  Groups: Group[];
+}
+
 interface CartItemType {
   item: string;
   quantity: number;
@@ -21,7 +29,7 @@ interface CartItemType {
 }
 
 function ScreenBasket({ theme }: { theme: string }) {
-  const [data, setData] = useState<string[]>([]);
+  const [data, setData] = useState<Group[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
@@ -35,12 +43,24 @@ function ScreenBasket({ theme }: { theme: string }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://677e75f694bde1c1252bfdd0.mockapi.io/api/v2/catalog"
-        );
+        const response = await fetch("https://677e75f694bde1c1252bfdd0.mockapi.io/api/v2/catalog");
         const result = await response.json();
-        const items = result.map((item: { Name?: string }) => item.Name).filter(Boolean); // Убедимся, что только валидные строки попадают в массив
-        setData(items);
+  
+        const groupsData: Group[] = result.map((item: any) => ({
+          Kod: item.Kod,
+          GUID: item.GUID,
+          Name: item.Name,
+          itGroup: item.itGroup,
+          Groups: item.Groups.map((subgroup: any) => ({
+            Kod: subgroup.Kod,
+            GUID: subgroup.GUID,
+            Name: subgroup.Name,
+            itGroup: subgroup.itGroup,
+            Groups: subgroup.Groups,  // Рекурсивно сохраняем подгруппы
+          })),
+        }));
+  
+        setData(groupsData);
       } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
       }
@@ -49,18 +69,31 @@ function ScreenBasket({ theme }: { theme: string }) {
     fetchData();
   }, []);
   
+  const flattenGroups = (groups: Group[]): Group[] => {
+    return groups.reduce<Group[]>((acc, group) => {
+      if (group.itGroup) {
+        acc.push(group);
+        if (group.Groups.length > 0) {
+          acc.push(...flattenGroups(group.Groups)); // Рекурсивно добавляем вложенные группы
+        }
+      } else {
+        acc.push(group);
+      }
+      return acc;
+    }, []);
+  };
+
   const filteredData = useMemo(
     () =>
-      data.filter(
-        (item) =>
-          typeof item === "string" &&
-          item.toLowerCase().includes(searchQuery.toLowerCase())
+      flattenGroups(data).filter(
+        (group) =>
+          group.Name.toLowerCase().includes(searchQuery.toLowerCase())  // Фильтруем по Name
       ),
     [data, searchQuery]
-  );
-  
+  );  
+
   const addToCart = (item: string) => {
-    setCartItems((prev) => {
+    setCartItems((prev: CartItemType[]) => {
       const existingItem = prev.find((cartItem) => cartItem.item === item);
       if (existingItem) {
         return prev.map((cartItem) =>
@@ -75,7 +108,7 @@ function ScreenBasket({ theme }: { theme: string }) {
   };
 
   const updateQuantity = (item: string, change: number) => {
-    setCartItems((prev) =>
+    setCartItems((prev: CartItemType[]) =>
       prev
         .map((cartItem) =>
           cartItem.item === item
@@ -87,7 +120,7 @@ function ScreenBasket({ theme }: { theme: string }) {
   };
 
   const toggleText = (item: string) => {
-    setCartItems((prev) =>
+    setCartItems((prev: CartItemType[]) =>
       prev.map((cartItem) =>
         cartItem.item === item
           ? { ...cartItem, expanded: !cartItem.expanded }
@@ -108,7 +141,7 @@ function ScreenBasket({ theme }: { theme: string }) {
           ]}
           contentContainerStyle={{ paddingBottom: 20 }}
           data={cartItems}
-          keyExtractor={(cartItem, index) => `${cartItem.item}-${index}`}
+          keyExtractor={(cartItem) => cartItem.item}
           renderItem={({ item }) => (
             <CartItem
               item={item}

@@ -37,7 +37,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, theme, toggleText, updateQuan
           numberOfLines={item.expanded ? undefined : 1}
           ellipsizeMode={item.expanded ? undefined : "tail"}
         >
-          {item.item} {item.price ? `(${item.price} ₽)` : ""} // Добавим отображение цены
+          {item.item} {item.price ? `(${item.price} ₽)` : ""}
         </Text>
       </TouchableOpacity>
       <View style={styles.quantityControls}>
