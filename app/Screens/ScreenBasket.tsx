@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   View,
   FlatList,
@@ -8,11 +8,10 @@ import {
 import Modal from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { generateData } from "../utils/dataGenerator";
-import CartItem from "../components/CartItem"; 
-import FloatingButton from "../components/FloatingButton"; 
-import ModalContent from "../components/ModalContent"; 
-import EmptyBasket from "../components/EmptyBasket"; 
+import CartItem from "../components/CartItem";
+import FloatingButton from "../components/FloatingButton";
+import ModalContent from "../components/ModalContent";
+import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
 
 interface CartItemType {
@@ -22,11 +21,10 @@ interface CartItemType {
 }
 
 function ScreenBasket({ theme }: { theme: string }) {
-  const [data] = useState(generateData());
+  const [data, setData] = useState<string[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
-
   const insets = useSafeAreaInsets();
 
   const closeModal = () => {
@@ -34,14 +32,33 @@ function ScreenBasket({ theme }: { theme: string }) {
     setSearchQuery("");
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://677e75f694bde1c1252bfdd0.mockapi.io/api/v2/catalog"
+        );
+        const result = await response.json();
+        const items = result.map((item: { Name?: string }) => item.Name).filter(Boolean); // Убедимся, что только валидные строки попадают в массив
+        setData(items);
+      } catch (error) {
+        console.error("Ошибка при загрузке данных:", error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
   const filteredData = useMemo(
     () =>
-      data.filter((item) =>
-        item.toLowerCase().includes(searchQuery.toLowerCase())
+      data.filter(
+        (item) =>
+          typeof item === "string" &&
+          item.toLowerCase().includes(searchQuery.toLowerCase())
       ),
     [data, searchQuery]
   );
-
+  
   const addToCart = (item: string) => {
     setCartItems((prev) => {
       const existingItem = prev.find((cartItem) => cartItem.item === item);

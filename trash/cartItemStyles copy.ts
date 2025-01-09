@@ -15,11 +15,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  cartItemDark: {
-    backgroundColor: "#2C2C2C",
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-  },
   textContainer: {
     flex: 1,
     marginRight: 10,
@@ -36,14 +31,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   quantityButton: {
-    backgroundColor: "#FF9800",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  quantityButtonDark: {
-    backgroundColor: "#FF9800",
-    borderColor: "#666",
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 4,
+    backgroundColor: "#F0F0F0",
   },
   quantityButtonText: {
     fontSize: 18,

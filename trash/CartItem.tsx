@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import styles from "../styles/cartItemStyles";
+import styles from "../app/styles/cartItemStyles";
 
 interface CartItemProps {
   item: {
     item: string;
     quantity: number;
     expanded: boolean;
-    price?: number; // Добавим опциональное поле price
+    price?: number; // Добавлено поле цены
   };
   theme: string;
   toggleText: (item: string) => void;
@@ -15,16 +15,11 @@ interface CartItemProps {
 }
 
 const CartItem: React.FC<CartItemProps> = ({ item, theme, toggleText, updateQuantity }) => {
-  const totalPrice = item.price ? item.price * item.quantity : 0;
+  const totalPrice = item.price ? item.price * item.quantity : 0; // Общая стоимость
 
   return (
-    <View
-      style={[
-        styles.cartItem,
-        theme === "dark" && styles.cartItemDark,
-      ]}
-    >
-      <TouchableOpacity // Добавим обработчик нажатия на элемент корзины
+    <View style={styles.cartItem}>
+      <TouchableOpacity
         style={styles.textContainer}
         onPress={() => toggleText(item.item)}
       >
@@ -37,16 +32,13 @@ const CartItem: React.FC<CartItemProps> = ({ item, theme, toggleText, updateQuan
           numberOfLines={item.expanded ? undefined : 1}
           ellipsizeMode={item.expanded ? undefined : "tail"}
         >
-          {item.item} {item.price ? `(${item.price} ₽)` : ""} // Добавим отображение цены
+          {item.item} {item.price ? `(${item.price} ₽)` : ""}
         </Text>
       </TouchableOpacity>
       <View style={styles.quantityControls}>
         <TouchableOpacity
           onPress={() => updateQuantity(item.item, -1)}
-          style={[
-            styles.quantityButton,
-            theme === "dark" && styles.quantityButtonDark,
-          ]}
+          style={styles.quantityButton}
         >
           <Text style={styles.quantityButtonText}>-</Text>
         </TouchableOpacity>
@@ -61,10 +53,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, theme, toggleText, updateQuan
         </Text>
         <TouchableOpacity
           onPress={() => updateQuantity(item.item, 1)}
-          style={[
-            styles.quantityButton,
-            theme === "dark" && styles.quantityButtonDark,
-          ]}
+          style={styles.quantityButton}
         >
           <Text style={styles.quantityButtonText}>+</Text>
         </TouchableOpacity>
