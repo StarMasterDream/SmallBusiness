@@ -27,6 +27,15 @@ function StackLayoutContent() {
           headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
         }}
       />
+      <Stack.Screen
+        name="settingsProfile"
+        options={{
+          title: "Настройки профиля",
+          headerBackTitle: "назад",
+          headerStyle: { backgroundColor: theme === "light" ? "#fff" : "#333" },
+          headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
+        }}
+      />
     </Stack>
   );
 }

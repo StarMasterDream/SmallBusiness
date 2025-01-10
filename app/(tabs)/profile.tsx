@@ -38,7 +38,10 @@ export default function ProfileScreen() {
           </View>
 
           <View style={[styles.settingsSection, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
-            <TouchableOpacity style={[styles.menuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}>
+            <TouchableOpacity
+            style={[styles.menuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
+            onPress={() => router.push("/settingsProfile")}
+            >
               <Ionicons name="person-outline" size={24} color="#FF2D55" />
               <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Мой профиль</Text>
             </TouchableOpacity>

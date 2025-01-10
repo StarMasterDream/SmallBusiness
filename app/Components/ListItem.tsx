@@ -3,7 +3,6 @@ import { View, TouchableOpacity, StyleSheet } from "react-native";
 import ItemRow from "./ItemRow";
 import { RemoteData } from "./types";
 
-
 const ListItem = ({ item, theme }: { item: RemoteData; theme: string }) => {
   const [showAllRows, setShowAllRows] = useState(false);
 

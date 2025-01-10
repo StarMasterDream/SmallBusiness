@@ -144,7 +144,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
           />
                   <TouchableOpacity
           style={[
-            styles.closeButton,
+            styles.closeButtonLight,
             theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight,
           ]}
           onPress={closeModal}

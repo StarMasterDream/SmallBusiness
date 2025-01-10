@@ -18,20 +18,14 @@ const styles = StyleSheet.create({
     color: "#FFF"
   },
   backBatoon: {
-    //position: "absolute",
-    //top: 16,
-    //left: 16,
-    //zIndex: 1,
-    //flex: 1,
     marginTop: 16,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: "#FF9800",
+    backgroundColor: "#6200EE",
     borderRadius: 8,
     alignItems: "center",
   },
   backBatoonDark: {
-    //color: "#FFF",
     backgroundColor: "#333",
   },
   backButtonText: {
@@ -49,10 +43,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     fontSize: 16,
     color: "#333",
-    //shadowColor: "#000",
-    //shadowOffset: { width: 0, height: 2 },
-    //shadowOpacity: 0.1,
-    //shadowRadius: 4,
   },
   inputDark: {
     borderColor: "#555",
@@ -66,23 +56,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     color: "#333",
     borderRadius: 12,
-    //shadowColor: "#000",
-    //shadowOffset: { width: 0, height: 2 },
-    //shadowOpacity: 0.1,
-    //shadowRadius: 4,
   },
   textItemDark: {
     backgroundColor: "#2C2C2C",
     color: "#FFF",
-    //shadowOpacity: 0.4,
-  },
-  closeButton: {
-    marginTop: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#FF9800",
-    borderRadius: 8,
-    alignItems: "center",
   },
   closeButtonText: {
     color: "#fff",
@@ -93,6 +70,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#333",
   },
   closeButtonLight: {
+    marginTop: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
     backgroundColor: "#6200EE",
   },
 });

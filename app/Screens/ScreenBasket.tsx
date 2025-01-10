@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CartItem from "../components/CartItem";
 import FloatingButton from "../components/FloatingButton";
+import SaleFloatingButton from "../components/SaleFloatingButton";
 import ModalContent from "../components/ModalContent";
 import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
@@ -153,6 +154,7 @@ function ScreenBasket({ theme }: { theme: string }) {
         />
       )}
       <FloatingButton onPress={() => setModalVisible(true)} />
+      <SaleFloatingButton onPress={() => alert("Функция в в разработке")} />
       <Modal
         isVisible={modalVisible}
         onSwipeComplete={closeModal}
