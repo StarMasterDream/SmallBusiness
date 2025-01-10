@@ -9,6 +9,36 @@ const styles = StyleSheet.create({
   modalBackgroundDark: {
     backgroundColor: "#1E1E1E",
   },
+  GroupsTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  GroupsTitleDark: {
+    color: "#FFF"
+  },
+  backBatoon: {
+    //position: "absolute",
+    //top: 16,
+    //left: 16,
+    //zIndex: 1,
+    //flex: 1,
+    marginTop: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#FF9800",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  backBatoonDark: {
+    //color: "#FFF",
+    backgroundColor: "#333",
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   searchInput: {
     height: 50,
     borderWidth: 1,

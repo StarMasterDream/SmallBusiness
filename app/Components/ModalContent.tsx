@@ -62,14 +62,15 @@ const ModalContent: React.FC<ModalContentProps> = ({
 
     // Если группа имеет подгруппы, отобразить их как отдельные группы
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <Text
-          style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}
+          style={theme === "dark" ? [styles.GroupsTitle, styles.GroupsTitleDark] : styles.GroupsTitle}
         >
           {group.Name}
         </Text>
         {group.Groups.length > 0 && (
           <FlatList
+          style={{ flex: 1 }}
             data={group.Groups}
             keyExtractor={(item) => item.Kod}
             renderItem={({ item }) => renderGroup(item)}
@@ -107,17 +108,21 @@ const ModalContent: React.FC<ModalContentProps> = ({
         />
 
         {selectedGroup ? (
-          <View>
-            <TouchableOpacity onPress={() => setSelectedGroup(null)}>
+          <View style={{ flex: 1 }}>
+            {renderGroup(selectedGroup)}
+            <TouchableOpacity onPress={() => setSelectedGroup(null)}
+              style={theme === "dark" ? [styles.backBatoon, styles.backBatoonDark] : styles.backBatoon}
+              >
               <Text
-                style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}
+                
+                style={styles.backButtonText}
               >
                 Назад
               </Text>
             </TouchableOpacity>
-            {renderGroup(selectedGroup)}
           </View>
         ) : (
+          <>
           <FlatList
             style={{ flex: 1 }}
             data={filteredData}
@@ -137,9 +142,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
             initialNumToRender={10}
             maxToRenderPerBatch={10}
           />
-        )}
-
-        <TouchableOpacity
+                  <TouchableOpacity
           style={[
             styles.closeButton,
             theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight,
@@ -148,6 +151,8 @@ const ModalContent: React.FC<ModalContentProps> = ({
         >
           <Text style={styles.closeButtonText}>Закрыть</Text>
         </TouchableOpacity>
+          </>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
