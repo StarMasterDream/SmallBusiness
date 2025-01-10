@@ -7,6 +7,12 @@ function StackLayoutContent() {
   return (
     <Stack>
       <Stack.Screen
+        name="loading"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="(authorization)"
         options={{
           headerShown: false,

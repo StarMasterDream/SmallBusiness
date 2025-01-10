@@ -1,8 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Platform, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useTheme } from "../theme-context";
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import ScreenCheque from "../screens/ScreenCheque";
 import ScreenBasket from "../screens/ScreenBasket";
 
@@ -10,19 +12,30 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function Index() {
   const { theme } = useTheme();
+  const router = useRouter();
   const isLightTheme = theme === "light";
-  
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const user = await SecureStore.getItemAsync("user");
+      if (!user) {
+        router.push("../(authorization)/login");
+      }
+    };
+    checkAuth();
+  }, [router]);
+
   const statusBarStyle = isLightTheme ? "dark-content" : "light-content";
   const statusBarBackgroundColor = isLightTheme ? "#F2F2F7" : "#1C1C1E";
 
-  const tabStyles = useMemo(() => ({
+  const tabStyles = {
     tabBarStyle: {
       backgroundColor: isLightTheme ? "#6200ee" : "#333",
       height: Platform.OS === "ios" ? 60 : 50,
     },
     tabBarLabelStyle: { color: "#fff" },
     tabBarIndicatorStyle: { backgroundColor: "#ff9800" },
-  }), [isLightTheme]);
+  };
 
   return (
     <>

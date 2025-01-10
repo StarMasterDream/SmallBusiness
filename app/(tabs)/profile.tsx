@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
+import * as SecureStore from 'expo-secure-store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme-context';
 
@@ -31,10 +32,21 @@ export default function ProfileScreen() {
               style={styles.profileImage}
             />
             <Text style={[styles.name, { color: isLightTheme ? '#000' : '#FFF' }]}>Ян Греку</Text>
-            <TouchableOpacity style={styles.photoButton} onPress={() => router.replace("/login")}>
-              <Text style={[styles.exitButtonText, { color: 'red' }]}>Выйти</Text>
-              <Ionicons name="exit" size={16} color="red" />
-            </TouchableOpacity>
+            <TouchableOpacity
+  style={styles.photoButton}
+  onPress={async () => {
+    try {
+      await SecureStore.deleteItemAsync("user"); // Удаляем пользователя из SecureStore
+      router.replace("../(authorization)/login"); // Перенаправляем на экран логина
+    } catch (error) {
+      console.error("Ошибка при выходе:", error);
+    }
+  }}
+>
+  <Text style={[styles.exitButtonText, { color: "red" }]}>Выйти</Text>
+  <Ionicons name="exit" size={16} color="red" />
+</TouchableOpacity>
+
           </View>
 
           <View style={[styles.settingsSection, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
