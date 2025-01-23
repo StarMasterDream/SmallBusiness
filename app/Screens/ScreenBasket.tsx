@@ -154,7 +154,7 @@ function ScreenBasket({ theme }: { theme: string }) {
         />
       )}
       <FloatingButton onPress={() => setModalVisible(true)} />
-      <SaleFloatingButton onPress={() => alert("Функция в в разработке")} />
+      <SaleFloatingButton onPress={() => alert("Данная Функция в разработке")} />
       <Modal
         isVisible={modalVisible}
         onSwipeComplete={closeModal}

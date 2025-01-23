@@ -19,7 +19,7 @@ export default function Index() {
     const checkAuth = async () => {
       const user = await SecureStore.getItemAsync("user");
       if (!user) {
-        router.push("../(authorization)/login");
+        router.replace("../(authorization)/login");
       }
     };
     checkAuth();
