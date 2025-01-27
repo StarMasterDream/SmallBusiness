@@ -9,7 +9,7 @@ interface SaleFloatingButtonProps {
 const SaleFloatingButton: React.FC<SaleFloatingButtonProps> = ({ onPress }) => {
   return (
     <TouchableOpacity style={styles.floatingButton} onPress={onPress}>
-      <Text style={{ color: "#fff", fontSize: 24 }}>продажа</Text>
+      <Text style={{ color: "#fff", fontSize: 24 }}>Продажа</Text>
     </TouchableOpacity>
   );
 };

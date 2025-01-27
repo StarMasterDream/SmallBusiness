@@ -17,13 +17,17 @@ export default function Index() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const user = await SecureStore.getItemAsync("user");
-      if (!user) {
-        router.replace("../(authorization)/login");
+      try {
+        const user = await SecureStore.getItemAsync("user");
+        if (!user) {
+          router.replace("../(authorization)/login");
+        }
+      } catch (error) {
+        console.error("Error checking auth:", error);
       }
     };
     checkAuth();
-  }, [router]);
+  }, [router]);  
 
   const statusBarStyle = isLightTheme ? "dark-content" : "light-content";
   const statusBarBackgroundColor = isLightTheme ? "#F2F2F7" : "#1C1C1E";
