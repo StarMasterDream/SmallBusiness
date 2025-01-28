@@ -20,10 +20,10 @@ const ListItem = ({ item, theme }: { item: RemoteData; theme: string }) => {
             <ItemRow label="Storage" value={item.Storage} theme={theme} showAllRows={showAllRows} />
             <ItemRow label="Counterparty" value={item.Counterparty} theme={theme} showAllRows={showAllRows} />
             <ItemRow label="TTN" value={item.TTN} theme={theme} showAllRows={showAllRows} />
-            <ItemRow label="DateTime" value={new Date(item.DateTime).toLocaleDateString()} theme={theme} showAllRows={showAllRows} />
-            <ItemRow label="Summ" value={item.Summ} theme={theme} showAllRows={showAllRows} />
-            <ItemRow label="Currency" value={item.Curency} theme={theme} showAllRows={showAllRows} />
-            <ItemRow label="User" value={item.User} theme={theme} showAllRows={showAllRows} />
+            <ItemRow label="DateTime" value={new Date(item.DateTime).toLocaleString()} theme={theme} showAllRows={showAllRows} />
+            <ItemRow label="Summ" value={item.Summ.toString()} theme={theme} showAllRows={showAllRows} />
+            <ItemRow label="Currency" value={item.Currency} theme={theme} showAllRows={showAllRows} />
+            <ItemRow label="User" value={item.User || "Не указан"} theme={theme} showAllRows={showAllRows} />
           </>
         )}
       </View>

@@ -39,9 +39,16 @@ const ModalContent: React.FC<ModalContentProps> = ({
 }) => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
+  const emptyData: Group = {
+    Kod: '0',
+    Name: 'Нет данных',
+    itGroup: false,
+    Groups: [],
+    GUID: 'placeholder' // Уникальный идентификатор
+  };  
+
   const renderGroup = (group: Group) => {
-    // Если группа содержит товары, отобразить их
-    if (!group.itGroup) {
+    if (!group.itGroup) { // замените на group.isFolder
       return (
         <TouchableOpacity
           onPress={() => {
@@ -59,8 +66,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
         </TouchableOpacity>
       );
     }
-
-    // Если группа имеет подгруппы, отобразить их как отдельные группы
+  
     return (
       <View style={{ flex: 1 }}>
         <Text
@@ -70,7 +76,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
         </Text>
         {group.Groups.length > 0 && (
           <FlatList
-          style={{ flex: 1 }}
+            style={{ flex: 1 }}
             data={group.Groups}
             keyExtractor={(item) => item.Kod}
             renderItem={({ item }) => renderGroup(item)}
@@ -82,7 +88,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
       </View>
     );
   };
-
+  
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -124,24 +130,46 @@ const ModalContent: React.FC<ModalContentProps> = ({
         ) : (
           <>
           <FlatList
-            style={{ flex: 1 }}
-            data={filteredData}
-            keyExtractor={(item) => item.Kod}
-            renderItem={({ item }) => {
-              return item.itGroup ? (
-                <TouchableOpacity onPress={() => setSelectedGroup(item)}>
-                  <Text
-                    style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}
-                  >
-                    {item.Name}
-                  </Text>
-                </TouchableOpacity>
-              ) : null;
-            }}
-            keyboardShouldPersistTaps="handled"
-            initialNumToRender={10}
-            maxToRenderPerBatch={10}
-          />
+  style={{ flex: 1 }}
+  data={filteredData.length > 0 ? filteredData : [emptyData]}
+  keyExtractor={(item) => item.GUID}
+  renderItem={({ item }) => {
+    if (item.Kod === '0') {
+      return (
+        <Text style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}>
+          {item.Name}
+        </Text>
+      );
+    }
+
+    return item.itGroup ? (
+      <TouchableOpacity onPress={() => setSelectedGroup(item)}>
+        <Text
+          style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}
+        >
+          {item.Name}
+        </Text>
+      </TouchableOpacity>
+    ) : (
+      <TouchableOpacity
+        onPress={() => {
+          addToCart(item.Name);
+          closeModal();
+        }}
+      >
+        <Text
+          style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}
+        >
+          {item.Name}
+        </Text>
+      </TouchableOpacity>
+    );
+  }}
+  keyboardShouldPersistTaps="handled"
+  initialNumToRender={10}
+  maxToRenderPerBatch={10}
+/>
+
                   <TouchableOpacity
           style={[
             styles.closeButtonLight,

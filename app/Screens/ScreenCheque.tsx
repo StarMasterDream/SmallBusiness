@@ -6,7 +6,6 @@ import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
 import { RemoteData } from "../components/types";
 
-
 const ScreenCheque = ({ theme }: { theme: string }) => {
   const [remoteData, setRemoteData] = useState<RemoteData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -16,17 +15,26 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get<RemoteData[]>(
-        "https://65c29882f7e6ea59682b8fcd.mockapi.io/v1/hs/trade/ReceiptOfGoods/Authorization"
-      );
-      setRemoteData(response.data);
+      
+      const response = await axios.get("http://192.168.1.10:8080/1c/hs/trade/ReceiptOfGoods");
+  
+      console.log("Тип данных:", typeof response.data);
+      console.log("Содержимое:", response.data);
+      console.log("Содержимое response.data:", JSON.stringify(response.data, null, 2));
+  
+      if (Array.isArray(response.data)) {
+        setRemoteData(response.data);
+      } else {
+        throw new Error("Ошибка формата данных: ожидается массив, а получено что-то другое");
+      }
     } catch (err) {
+      console.error("Ошибка при загрузке:", err);
       setError("Ошибка загрузки данных. Попробуйте снова.");
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchData();
   }, []);
@@ -38,7 +46,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
     <FlatList
       style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}
       contentContainerStyle={{ paddingBottom: 20 }}
-      data={remoteData}
+      data={remoteData ?? []}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => <ListItem item={item} theme={theme} />}
       initialNumToRender={10}

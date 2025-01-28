@@ -44,21 +44,25 @@ function ScreenBasket({ theme }: { theme: string }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://677e75f694bde1c1252bfdd0.mockapi.io/api/v2/catalog");
+        const response = await fetch("http://192.168.1.10:8080/1c/hs/trade/Goods");
+        if (!response.ok) {
+          throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
         const result = await response.json();
+        console.log("Данные из API:", result);
   
         const groupsData: Group[] = result.map((item: any) => ({
           Kod: item.Kod,
           GUID: item.GUID,
           Name: item.Name,
-          itGroup: item.itGroup,
-          Groups: item.Groups.map((subgroup: any) => ({
+          itGroup: item.isFolder, // Используем isFolder вместо itGroup
+          Groups: item.Data?.map((subgroup: any) => ({
             Kod: subgroup.Kod,
             GUID: subgroup.GUID,
             Name: subgroup.Name,
-            itGroup: subgroup.itGroup,
-            Groups: subgroup.Groups,  // Рекурсивно сохраняем подгруппы
-          })),
+            itGroup: subgroup.isFolder, // Используем isFolder
+            Groups: subgroup.Data || [],
+          })) || [],
         }));
   
         setData(groupsData);
@@ -83,13 +87,14 @@ function ScreenBasket({ theme }: { theme: string }) {
       return acc;
     }, []);
   };
-
+  
   const filteredData = useMemo(
     () =>
-      flattenGroups(data).filter(
-        (group) =>
-          group.Name.toLowerCase().includes(searchQuery.toLowerCase())  // Фильтруем по Name
-      ),
+      data.length > 0
+        ? flattenGroups(data).filter((group) =>
+            group.Name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : [],
     [data, searchQuery]
   );  
 
