@@ -18,9 +18,9 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       
       const response = await axios.get("http://192.168.1.10:8080/1c/hs/trade/ReceiptOfGoods");
   
-      console.log("Тип данных:", typeof response.data);
-      console.log("Содержимое:", response.data);
-      console.log("Содержимое response.data:", JSON.stringify(response.data, null, 2));
+      //console.log("Тип данных в ScreenCheque.tsx:", typeof response.data);
+      //console.log("Содержимое:", response.data);
+      //console.log("Содержимое response.data:", JSON.stringify(response.data, null, 2));
   
       if (Array.isArray(response.data)) {
         setRemoteData(response.data);

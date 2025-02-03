@@ -15,12 +15,12 @@ import ModalContent from "../components/ModalContent";
 import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
 
-interface Group {
+interface Folder {
   Kod: string;
   GUID: string;
   Name: string;
-  itGroup: boolean;
-  Groups: Group[];
+  isFolder: boolean;
+  Data: Folder[];
 }
 
 interface CartItemType {
@@ -30,7 +30,7 @@ interface CartItemType {
 }
 
 function ScreenBasket({ theme }: { theme: string }) {
-  const [data, setData] = useState<Group[]>([]);
+  const [data, setData] = useState<Folder[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
@@ -49,19 +49,21 @@ function ScreenBasket({ theme }: { theme: string }) {
           throw new Error(`Ошибка HTTP: ${response.status}`);
         }
         const result = await response.json();
-        console.log("Данные из API:", result);
-  
-        const groupsData: Group[] = result.map((item: any) => ({
+
+        //console.log("Данные из API:", result);
+        //console.log("Тип данных в ScreenBasket.tsx:", typeof response.json());
+        
+        const groupsData: Folder[] = result.map((item: any) => ({
           Kod: item.Kod,
           GUID: item.GUID,
           Name: item.Name,
-          itGroup: item.isFolder, // Используем isFolder вместо itGroup
-          Groups: item.Data?.map((subgroup: any) => ({
+          isFolder: item.isFolder,
+          Data: item.Data?.map((subgroup: any) => ({
             Kod: subgroup.Kod,
             GUID: subgroup.GUID,
             Name: subgroup.Name,
-            itGroup: subgroup.isFolder, // Используем isFolder
-            Groups: subgroup.Data || [],
+            isFolder: subgroup.isFolder,
+            Data: subgroup.Data || [],
           })) || [],
         }));
   
@@ -74,12 +76,12 @@ function ScreenBasket({ theme }: { theme: string }) {
     fetchData();
   }, []);
   
-  const flattenGroups = (groups: Group[]): Group[] => {
-    return groups.reduce<Group[]>((acc, group) => {
-      if (group.itGroup) {
+  const flattenGroups = (groups: Folder[]): Folder[] => {
+    return groups.reduce<Folder[]>((acc, group) => {
+      if (group.isFolder) {
         acc.push(group);
-        if (group.Groups.length > 0) {
-          acc.push(...flattenGroups(group.Groups)); // Рекурсивно добавляем вложенные группы
+        if (group.Data.length > 0) {
+          acc.push(...flattenGroups(group.Data));
         }
       } else {
         acc.push(group);

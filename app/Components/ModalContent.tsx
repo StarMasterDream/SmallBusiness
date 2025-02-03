@@ -10,12 +10,12 @@ import {
 } from "react-native";
 import styles from "../styles/modalContentStyles";
 
-interface Group {
+interface Folder {
   Kod: string;
   GUID: string;
   Name: string;
-  itGroup: boolean;
-  Groups: Group[];
+  isFolder: boolean;
+  Data: Folder[];
 }
 
 interface ModalContentProps {
@@ -23,7 +23,7 @@ interface ModalContentProps {
   closeModal: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  filteredData: Group[];
+  filteredData: Folder[];
   addToCart: (item: string) => void;
   insets: { top: number; bottom: number };
 }
@@ -37,18 +37,18 @@ const ModalContent: React.FC<ModalContentProps> = ({
   addToCart,
   insets,
 }) => {
-  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Folder | null>(null);
 
-  const emptyData: Group = {
+  const emptyData: Folder = {
     Kod: '0',
     Name: 'Нет данных',
-    itGroup: false,
-    Groups: [],
-    GUID: 'placeholder' // Уникальный идентификатор
+    isFolder: false,
+    Data: [],
+    GUID: 'placeholder'
   };  
 
-  const renderGroup = (group: Group) => {
-    if (!group.itGroup) { // замените на group.isFolder
+  const renderGroup = (group: Folder) => {
+    if (!group.isFolder) {
       return (
         <TouchableOpacity
           onPress={() => {
@@ -70,14 +70,14 @@ const ModalContent: React.FC<ModalContentProps> = ({
     return (
       <View style={{ flex: 1 }}>
         <Text
-          style={theme === "dark" ? [styles.GroupsTitle, styles.GroupsTitleDark] : styles.GroupsTitle}
+          style={theme === "dark" ? [styles.DataTitle, styles.DataTitleDark] : styles.DataTitle}
         >
           {group.Name}
         </Text>
-        {group.Groups.length > 0 && (
+        {group.Data.length > 0 && (
           <FlatList
             style={{ flex: 1 }}
-            data={group.Groups}
+            data={group.Data}
             keyExtractor={(item) => item.Kod}
             renderItem={({ item }) => renderGroup(item)}
             keyboardShouldPersistTaps="handled"
@@ -142,10 +142,10 @@ const ModalContent: React.FC<ModalContentProps> = ({
       );
     }
 
-    return item.itGroup ? (
+    return item.isFolder ? (
       <TouchableOpacity onPress={() => setSelectedGroup(item)}>
         <Text
-          style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}
+          style={theme === "dark" ? [styles.textItemFolder, styles.textItemDarkFolder] : styles.textItem}
         >
           {item.Name}
         </Text>

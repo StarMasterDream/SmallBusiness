@@ -9,12 +9,12 @@ const styles = StyleSheet.create({
   modalBackgroundDark: {
     backgroundColor: "#1E1E1E",
   },
-  GroupsTitle: {
+  DataTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 16,
   },
-  GroupsTitleDark: {
+  DataTitleDark: {
     color: "#FFF"
   },
   backBatoon: {
@@ -47,6 +47,18 @@ const styles = StyleSheet.create({
   inputDark: {
     borderColor: "#555",
     backgroundColor: "#2C2C2C",
+    color: "#FFF",
+  },
+  textItemFolder: {
+    fontSize: 16,
+    margin: 12,
+    padding: 15,
+    backgroundColor: "#FF9800",
+    color: "#333",
+    borderRadius: 12,
+  },
+  textItemDarkFolder: {
+    backgroundColor: "#FF9800",
     color: "#FFF",
   },
   textItem: {
