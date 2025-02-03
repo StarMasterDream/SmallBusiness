@@ -164,8 +164,8 @@ function ScreenBasket({ theme }: { theme: string }) {
       <SaleFloatingButton onPress={() => alert("Данная Функция в разработке")} />
       <Modal
         isVisible={modalVisible}
-        onSwipeComplete={closeModal}
-        swipeDirection="down"
+        //onSwipeComplete={closeModal}
+        //swipeDirection="down"
         style={styles.modalWrapper}
       >
         <KeyboardAvoidingView
