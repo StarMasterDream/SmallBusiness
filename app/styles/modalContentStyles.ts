@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+  // Основные контейнеры
   modalContainer: {
     flex: 1,
     padding: 16,
@@ -9,14 +10,18 @@ const styles = StyleSheet.create({
   modalBackgroundDark: {
     backgroundColor: "#1E1E1E",
   },
+
+  // Заголовки и текст
   DataTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "bold" as const,
     marginBottom: 16,
   },
   DataTitleDark: {
-    color: "#FFF"
+    color: "#FFF",
   },
+
+  // Кнопки
   backBatoon: {
     marginTop: 16,
     paddingVertical: 10,
@@ -28,11 +33,24 @@ const styles = StyleSheet.create({
   backBatoonDark: {
     backgroundColor: "#333",
   },
+  closeButtonLight: {
+    marginTop: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    backgroundColor: "#6200EE",
+  },
+  closeButtonDark: {
+    backgroundColor: "#333",
+  },
   backButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "bold" as const,
   },
+
+  // Поле поиска
   searchInput: {
     height: 50,
     borderWidth: 1,
@@ -49,6 +67,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#2C2C2C",
     color: "#FFF",
   },
+
+  // Элементы списка
   textItemFolder: {
     fontSize: 16,
     margin: 12,
@@ -73,21 +93,32 @@ const styles = StyleSheet.create({
     backgroundColor: "#2C2C2C",
     color: "#FFF",
   },
+
+  // Новые стили из доработки
+  folderItem: {
+    fontSize: 16,
+    fontWeight: "bold" as const,
+    color: "#333",
+    paddingVertical: 8,
+  },
+  folderItemDark: {
+    color: "#fff",
+  },
+  nestedContainer: {
+    paddingLeft: 16,
+  },
+  emptyText: {
+    color: "#888",
+    fontStyle: "italic" as const,
+    paddingLeft: 16,
+  },
+  emptyTextDark: {
+    color: "#666",
+  },
   closeButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
-  },
-  closeButtonDark: {
-    backgroundColor: "#333",
-  },
-  closeButtonLight: {
-    marginTop: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: "center",
-    backgroundColor: "#6200EE",
+    fontWeight: "bold" as const,
   },
 });
 

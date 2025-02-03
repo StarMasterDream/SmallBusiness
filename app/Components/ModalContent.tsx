@@ -37,58 +37,69 @@ const ModalContent: React.FC<ModalContentProps> = ({
   addToCart,
   insets,
 }) => {
-  const [selectedGroup, setSelectedGroup] = useState<Folder | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
 
-  const emptyData: Folder = {
-    Kod: '0',
-    Name: 'Нет данных',
-    isFolder: false,
-    Data: [],
-    GUID: 'placeholder'
-  };  
+  const toggleFolder = (folderId: string) => {
+    setExpandedFolders(prev => ({
+      ...prev,
+      [folderId]: !prev[folderId]
+    }));
+  };
 
-  const renderGroup = (group: Folder) => {
-    if (!group.isFolder) {
+  const renderItem = ({ item }: { item: Folder }) => {
+    if (item.isFolder) {
+      const isExpanded = expandedFolders[item.GUID] || false;
+      
       return (
-        <TouchableOpacity
-          onPress={() => {
-            addToCart(group.Name);
-            closeModal();
-          }}
-        >
-          <Text
-            style={
-              theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem
-            }
-          >
-            {group.Name}
-          </Text>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity onPress={() => toggleFolder(item.GUID)}>
+            <Text style={[
+              styles.textItemFolder,
+              theme === "dark" && styles.textItemDarkFolder,
+              { marginBottom: isExpanded ? 0 : 12 } // Добавляем отступ только если папка закрыта
+            ]}>
+              {item.Name} {isExpanded ? "▼" : "▶"}
+            </Text>
+          </TouchableOpacity>
+          
+          {isExpanded && (
+            <View style={styles.nestedContainer}>
+              <FlatList
+                data={item.Data}
+                keyExtractor={(subItem) => subItem.GUID}
+                renderItem={renderItem}
+                ListEmptyComponent={
+                  <Text style={[
+                    styles.emptyText,
+                    theme === "dark" && styles.emptyTextDark
+                  ]}>
+                    Пустая папка
+                  </Text>
+                }
+              />
+            </View>
+          )}
+        </View>
       );
     }
-  
+
     return (
-      <View style={{ flex: 1 }}>
-        <Text
-          style={theme === "dark" ? [styles.DataTitle, styles.DataTitleDark] : styles.DataTitle}
-        >
-          {group.Name}
+      <TouchableOpacity
+        onPress={() => {
+          addToCart(item.Name);
+          closeModal();
+        }}
+      >
+        <Text style={[
+          styles.textItem,
+          theme === "dark" && styles.textItemDark
+        ]}>
+          {item.Name}
         </Text>
-        {group.Data.length > 0 && (
-          <FlatList
-            style={{ flex: 1 }}
-            data={group.Data}
-            keyExtractor={(item) => item.Kod}
-            renderItem={({ item }) => renderGroup(item)}
-            keyboardShouldPersistTaps="handled"
-            initialNumToRender={10}
-            maxToRenderPerBatch={10}
-          />
-        )}
-      </View>
+      </TouchableOpacity>
     );
   };
-  
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -97,7 +108,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
       <View
         style={[
           styles.modalContainer,
-          theme === "dark" ? styles.modalBackgroundDark : null,
+          theme === "dark" && styles.modalBackgroundDark,
           {
             paddingTop: insets.top + 16,
             paddingBottom: insets.bottom + 16,
@@ -106,81 +117,44 @@ const ModalContent: React.FC<ModalContentProps> = ({
         ]}
       >
         <TextInput
-          style={theme === "dark" ? [styles.searchInput, styles.inputDark] : styles.searchInput}
+          style={[
+            styles.searchInput,
+            theme === "dark" && styles.inputDark
+          ]}
           placeholder="Поиск..."
           placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
 
-        {selectedGroup ? (
-          <View style={{ flex: 1 }}>
-            {renderGroup(selectedGroup)}
-            <TouchableOpacity onPress={() => setSelectedGroup(null)}
-              style={theme === "dark" ? [styles.backBatoon, styles.backBatoonDark] : styles.backBatoon}
-              >
-              <Text
-                
-                style={styles.backButtonText}
-              >
-                Назад
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <>
-          <FlatList
-  style={{ flex: 1 }}
-  data={filteredData.length > 0 ? filteredData : [emptyData]}
-  keyExtractor={(item) => item.GUID}
-  renderItem={({ item }) => {
-    if (item.Kod === '0') {
-      return (
-        <Text style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}>
-          {item.Name}
-        </Text>
-      );
-    }
+        <FlatList
+          data={filteredData}
+          keyExtractor={(item) => item.GUID}
+          renderItem={renderItem}
+          ListEmptyComponent={
+            <Text style={[
+              styles.emptyText,
+              theme === "dark" && styles.emptyTextDark,
+              { textAlign: "center", marginTop: 20 }
+            ]}>
+              Нет данных
+            </Text>
+          }
+          keyboardShouldPersistTaps="handled"
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
 
-    return item.isFolder ? (
-      <TouchableOpacity onPress={() => setSelectedGroup(item)}>
-        <Text
-          style={theme === "dark" ? [styles.textItemFolder, styles.textItemDarkFolder] : styles.textItem}
-        >
-          {item.Name}
-        </Text>
-      </TouchableOpacity>
-    ) : (
-      <TouchableOpacity
-        onPress={() => {
-          addToCart(item.Name);
-          closeModal();
-        }}
-      >
-        <Text
-          style={theme === "dark" ? [styles.textItem, styles.textItemDark] : styles.textItem}
-        >
-          {item.Name}
-        </Text>
-      </TouchableOpacity>
-    );
-  }}
-  keyboardShouldPersistTaps="handled"
-  initialNumToRender={10}
-  maxToRenderPerBatch={10}
-/>
-
-                  <TouchableOpacity
+        <TouchableOpacity
           style={[
             styles.closeButtonLight,
-            theme === "dark" ? styles.closeButtonDark : styles.closeButtonLight,
+            theme === "dark" && styles.closeButtonDark
           ]}
           onPress={closeModal}
         >
           <Text style={styles.closeButtonText}>Закрыть</Text>
         </TouchableOpacity>
-          </>
-        )}
       </View>
     </KeyboardAvoidingView>
   );
