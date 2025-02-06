@@ -90,26 +90,23 @@ function ScreenBasket({ theme }: { theme: string }) {
     }, []);
   };
   
-  const filteredData = useMemo(() => {
-    // Вычисление данных
-    const result = data.length > 0
-      ? flattenGroups(data)
-          .filter((group) =>
-            group.Name.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .reduce((unique: Folder[], item) => {
-            if (!unique.some((el) => el.GUID === item.GUID)) {
-              unique.push(item);
-            }
-            return unique;
-          }, [])
-      : [];
-  
-    //console.log("Данные из filteredData:", result);
-    //console.log("Зависимости:", [data, searchQuery]);
-  
-    return result;
-  }, [data, searchQuery]); // Массив зависимостей должен быть ТОЛЬКО здесь
+  const filteredData = useMemo(
+    () =>
+      data.length > 0
+        ? Array.from(
+            new Map(
+              flattenGroups(data)
+                .filter((group) =>
+                  group.Name.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .reverse()
+                .map((item) => [item.GUID, item])
+            )
+            .values()
+          ).reverse()
+        : [],
+    [data, searchQuery]
+  );
 
   const addToCart = (item: string) => {
     setCartItems((prev: CartItemType[]) => {
