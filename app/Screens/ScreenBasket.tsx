@@ -99,11 +99,9 @@ function ScreenBasket({ theme }: { theme: string }) {
                 .filter((group) =>
                   group.Name.toLowerCase().includes(searchQuery.toLowerCase())
                 )
-                .reverse()
                 .map((item) => [item.GUID, item])
-            )
-            .values()
-          ).reverse()
+            ).values()
+          )
         : [],
     [data, searchQuery]
   );
