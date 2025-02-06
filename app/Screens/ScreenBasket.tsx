@@ -30,6 +30,7 @@ interface CartItemType {
 }
 
 function ScreenBasket({ theme }: { theme: string }) {
+  const [loading, setLoading] = useState(false); // Добавлено состояние загрузки
   const [data, setData] = useState<Folder[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,6 +44,7 @@ function ScreenBasket({ theme }: { theme: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
+        setLoading(true);
       try {
         const response = await fetch("http://192.168.1.10:8080/1c/hs/trade/Goods");
         if (!response.ok) {
@@ -68,6 +70,7 @@ function ScreenBasket({ theme }: { theme: string }) {
         }));
   
         setData(groupsData);
+        setLoading(false);
       } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
       }
@@ -186,6 +189,7 @@ function ScreenBasket({ theme }: { theme: string }) {
             filteredData={filteredData}
             addToCart={addToCart}
             insets={insets}
+            loading={loading}
           />
         </KeyboardAvoidingView>
       </Modal>

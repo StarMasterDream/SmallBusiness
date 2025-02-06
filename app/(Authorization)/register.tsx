@@ -4,6 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme-context';
+import base64 from 'base-64';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -23,6 +24,13 @@ const Register = () => {
     setLoading(true);
     try {
       await SecureStore.setItemAsync('user', JSON.stringify({ email, password }));
+      
+      // Кодировка и вывод в консоль
+      const combined = `${email.slice(0,50)}${password.slice(0,15)}`;
+      console.log('email+password:', combined);
+      const encoded = base64.encode(combined).slice(0, 150);
+      console.log('register-screen-base64:', encoded);
+      
       Alert.alert('Успешно', 'Регистрация завершена!');
       router.replace('/login');
     } catch (error) {
@@ -52,6 +60,7 @@ const Register = () => {
       </Text>
       <TextInput
         placeholder="Email"
+        maxLength={50}
         placeholderTextColor={isLightTheme ? '#888888' : '#CCCCCC'}
         style={[
           styles.input,
@@ -61,10 +70,11 @@ const Register = () => {
           },
         ]}
         value={email}
-        onChangeText={setEmail}
+        onChangeText={text => setEmail(text.replace(/\s/g, ''))}
       />
       <TextInput
         placeholder="Пароль"
+        maxLength={15}
         placeholderTextColor={isLightTheme ? '#888888' : '#CCCCCC'}
         style={[
           styles.input,
@@ -75,7 +85,7 @@ const Register = () => {
         ]}
         secureTextEntry
         value={password}
-        onChangeText={setPassword}
+        onChangeText={text => setPassword(text.replace(/\s/g, ''))}
       />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />

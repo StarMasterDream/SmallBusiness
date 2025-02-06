@@ -7,8 +7,10 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import styles from "../styles/modalContentStyles";
+
 
 interface Folder {
   Kod: string;
@@ -26,6 +28,7 @@ interface ModalContentProps {
   filteredData: Folder[];
   addToCart: (item: string) => void;
   insets: { top: number; bottom: number };
+  loading: boolean;
 }
 
 const ModalContent: React.FC<ModalContentProps> = ({
@@ -36,6 +39,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
   filteredData,
   addToCart,
   insets,
+  loading,
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
 
@@ -126,7 +130,15 @@ const ModalContent: React.FC<ModalContentProps> = ({
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-
+  
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator 
+            size="large" 
+            color={theme === "dark" ? "#fff" : "#000"} 
+          />
+        </View>
+      ) : (
         <FlatList
           data={filteredData}
           keyExtractor={(item) => item.GUID}
@@ -145,8 +157,9 @@ const ModalContent: React.FC<ModalContentProps> = ({
           maxToRenderPerBatch={10}
           contentContainerStyle={{ paddingBottom: 20 }}
         />
+      )}
 
-        <TouchableOpacity
+      <TouchableOpacity
           style={[
             styles.closeButtonLight,
             theme === "dark" && styles.closeButtonDark
