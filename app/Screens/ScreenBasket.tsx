@@ -90,15 +90,26 @@ function ScreenBasket({ theme }: { theme: string }) {
     }, []);
   };
   
-  const filteredData = useMemo(
-    () =>
-      data.length > 0
-        ? flattenGroups(data).filter((group) =>
+  const filteredData = useMemo(() => {
+    // Вычисление данных
+    const result = data.length > 0
+      ? flattenGroups(data)
+          .filter((group) =>
             group.Name.toLowerCase().includes(searchQuery.toLowerCase())
           )
-        : [],
-    [data, searchQuery]
-  );  
+          .reduce((unique: Folder[], item) => {
+            if (!unique.some((el) => el.GUID === item.GUID)) {
+              unique.push(item);
+            }
+            return unique;
+          }, [])
+      : [];
+  
+    //console.log("Данные из filteredData:", result);
+    //console.log("Зависимости:", [data, searchQuery]);
+  
+    return result;
+  }, [data, searchQuery]); // Массив зависимостей должен быть ТОЛЬКО здесь
 
   const addToCart = (item: string) => {
     setCartItems((prev: CartItemType[]) => {
