@@ -16,11 +16,15 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get("http://192.168.1.10:8080/1c/hs/trade/ReceiptOfGoods");
-  
-      //console.log("Тип данных в ScreenCheque.tsx:", typeof response.data);
-      //console.log("Содержимое:", response.data);
-      //console.log("Содержимое response.data:", JSON.stringify(response.data, null, 2));
+      const response = await axios.get(
+        "http://DESKTOP-MITLV5M:8080/1c/hs/trade/ReceiptOfGoods",
+        {
+          headers: {
+            'Authorization': 'd2ViOndlYg==',
+            'content-type': 'application/json'
+          }
+        }
+      );
   
       if (Array.isArray(response.data)) {
         setRemoteData(response.data);
@@ -28,8 +32,13 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
         throw new Error("Ошибка формата данных: ожидается массив, а получено что-то другое");
       }
     } catch (err) {
-      console.error("Ошибка при загрузке:", err);
+      console.error("Ошибка при загрузке Чеки:", err);
       setError("Ошибка загрузки данных. Попробуйте снова.");
+      if (axios.isAxiosError(err)) {
+        console.log('Status:', err.response?.status);
+        console.log('Headers:', err.response?.headers);
+        console.log('Server response:', err.response?.data);
+      }
     } finally {
       setLoading(false);
     }

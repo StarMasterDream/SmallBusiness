@@ -26,7 +26,7 @@ const Register = () => {
       await SecureStore.setItemAsync('user', JSON.stringify({ email, password }));
       
       // Кодировка и вывод в консоль
-      const combined = `${email.slice(0,50)}${password.slice(0,15)}`;
+      const combined = `${email.slice(0,50)}:${password.slice(0,15)}`;
       console.log('email+password:', combined);
       const encoded = base64.encode(combined).slice(0, 150);
       console.log('register-screen-base64:', encoded);

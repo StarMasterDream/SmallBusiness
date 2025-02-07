@@ -46,14 +46,16 @@ function ScreenBasket({ theme }: { theme: string }) {
     const fetchData = async () => {
         setLoading(true);
       try {
-        const response = await fetch("http://192.168.1.10:8080/1c/hs/trade/Goods");
+        const response = await fetch('http://DESKTOP-MITLV5M:8080/1c/hs/trade/Goods',{
+          method: 'get',
+          headers: new Headers ({
+            'Authorization': 'd2ViOndlYg==',
+            'Content-Type': 'application/json',
+        }),});
         if (!response.ok) {
           throw new Error(`Ошибка HTTP: ${response.status}`);
         }
         const result = await response.json();
-
-        //console.log("Данные из API:", result);
-        //console.log("Тип данных в ScreenBasket.tsx:", typeof response.json());
         
         const groupsData: Folder[] = result.map((item: any) => ({
           Kod: item.Kod,
@@ -72,7 +74,7 @@ function ScreenBasket({ theme }: { theme: string }) {
         setData(groupsData);
         setLoading(false);
       } catch (error) {
-        console.error("Ошибка при загрузке данных:", error);
+        console.error("Ошибка при загрузке данных Modal:", error);
       }
     };
   
@@ -93,7 +95,7 @@ function ScreenBasket({ theme }: { theme: string }) {
     }, []);
   };
   
-  const filteredData = useMemo(
+  /*const filteredData = useMemo(
     () =>
       data.length > 0
         ? Array.from(
@@ -107,7 +109,17 @@ function ScreenBasket({ theme }: { theme: string }) {
           )
         : [],
     [data, searchQuery]
-  );
+  );*/
+
+  const filteredData = useMemo(
+    () =>
+      data.length > 0
+        ? flattenGroups(data).filter((group) =>
+            group.Name.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : [],
+    [data, searchQuery]
+  );  
 
   const addToCart = (item: string) => {
     setCartItems((prev: CartItemType[]) => {
