@@ -44,20 +44,21 @@ function ScreenBasket({ theme }: { theme: string }) {
 
   useEffect(() => {
     const fetchData = async () => {
-        setLoading(true);
+      setLoading(true);
       try {
-        const response = await fetch('http://DESKTOP-MITLV5M:8080/1c/hs/trade/Goods',{
-          method: 'get',
-          headers: new Headers ({
-            'Authorization': 'd2ViOndlYg==',
-            'Content-Type': 'application/json',
-        }),});
+        const response = await fetch('http://192.168.1.101:8080/1c/hs/trade/Goods', {
+          method: 'GET',
+          headers: new Headers({
+            Authorization: 'd2ViOndlYg=='
+          })
+        });
+  
         if (!response.ok) {
           throw new Error(`Ошибка HTTP: ${response.status}`);
         }
+  
         const result = await response.json();
-        
-        const groupsData: Folder[] = result.map((item: any) => ({
+        const groupsData = result.map((item: any) => ({
           Kod: item.Kod,
           GUID: item.GUID,
           Name: item.Name,
@@ -72,14 +73,15 @@ function ScreenBasket({ theme }: { theme: string }) {
         }));
   
         setData(groupsData);
-        setLoading(false);
       } catch (error) {
-        console.error("Ошибка при загрузке данных Modal:", error);
+        console.error("Ошибка при загрузке данных:", error);
+      } finally {
+        setLoading(false);
       }
     };
   
     fetchData();
-  }, []);
+  }, []);  
   
   const flattenGroups = (groups: Folder[]): Folder[] => {
     return groups.reduce<Folder[]>((acc, group) => {

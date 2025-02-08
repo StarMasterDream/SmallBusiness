@@ -26,6 +26,7 @@ const Login = () => {
         if (email === storedEmail && password === storedPassword) {
           // Кодировка и вывод в консоль
           const combined = `${email.slice(0,50)}:${password.slice(0,15)}`;
+          console.log('login+password:', combined);
           const encoded = base64.encode(combined).slice(0, 150);
           console.log('login-screen-base64:', encoded);
           router.replace('/');

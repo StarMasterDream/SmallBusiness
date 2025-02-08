@@ -20,8 +20,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
         "http://DESKTOP-MITLV5M:8080/1c/hs/trade/ReceiptOfGoods",
         {
           headers: {
-            'Authorization': 'd2ViOndlYg==',
-            'content-type': 'application/json'
+            Authorization: 'd2ViOndlYg=='
           }
         }
       );
