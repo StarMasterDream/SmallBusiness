@@ -46,7 +46,7 @@ function ScreenBasket({ theme }: { theme: string }) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://192.168.1.10:8080/1C/hs/trade/Goods', {
+        const response = await fetch('http://DESKTOP-MITLV5M:8080/1C/hs/trade/Goods', {
           method: 'GET',
           headers: new Headers({
             Authorization: 'd2ViOndlYg=='
@@ -74,7 +74,7 @@ function ScreenBasket({ theme }: { theme: string }) {
   
         setData(groupsData);
       } catch (error) {
-        console.error("Ошибка при загрузке данных:", error);
+        console.error("Ошибка при загрузке данных в Modal:", error);
       } finally {
         setLoading(false);
       }
