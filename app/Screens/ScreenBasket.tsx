@@ -30,7 +30,7 @@ interface CartItemType {
 }
 
 function ScreenBasket({ theme }: { theme: string }) {
-  const [loading, setLoading] = useState(false); // Добавлено состояние загрузки
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Folder[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,7 +46,7 @@ function ScreenBasket({ theme }: { theme: string }) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://192.168.1.101:8080/1c/hs/trade/Goods', {
+        const response = await fetch('http://192.168.1.10:8080/1C/hs/trade/Goods', {
           method: 'GET',
           headers: new Headers({
             Authorization: 'd2ViOndlYg=='
@@ -188,6 +188,7 @@ function ScreenBasket({ theme }: { theme: string }) {
       <Modal
         isVisible={modalVisible}
         //onSwipeComplete={closeModal}
+        //onSwipeComplete={refreshing}
         //swipeDirection="down"
         style={styles.modalWrapper}
       >

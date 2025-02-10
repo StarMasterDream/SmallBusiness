@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FlatList } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import axios from "axios";
 import ListItem from "../components/ListItem";
 import LoadingView from "../components/LoadingView";
@@ -10,14 +10,15 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
   const [remoteData, setRemoteData] = useState<RemoteData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = async (isRefreshing?: boolean) => {
     try {
       setLoading(true);
       setError(null);
       
       const response = await axios.get(
-        "http://DESKTOP-MITLV5M:8080/1c/hs/trade/ReceiptOfGoods",
+        "http://192.168.1.10:8080/1C/hs/trade/ReceiptOfGoods",
         {
           headers: {
             Authorization: 'd2ViOndlYg=='
@@ -28,7 +29,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       if (Array.isArray(response.data)) {
         setRemoteData(response.data);
       } else {
-        throw new Error("Ошибка формата данных: ожидается массив, а получено что-то другое");
+        throw new Error("Ошибка формата данных: ожидается массив");
       }
     } catch (err) {
       console.error("Ошибка при загрузке Чеки:", err);
@@ -39,7 +40,8 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
         console.log('Server response:', err.response?.data);
       }
     } finally {
-      setLoading(false);
+      if (!isRefreshing) setLoading(false);
+      setRefreshing(false);
     }
   };
   
@@ -47,8 +49,14 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
     fetchData();
   }, []);
 
-  if (loading) return <LoadingView theme={theme} />;
-  if (error) return <ErrorView error={error} onRetry={fetchData} />;
+  if (loading && remoteData.length === 0) return <LoadingView theme={theme} />;
+  if (error && remoteData.length === 0) return <ErrorView error={error} theme={theme} onRetry={fetchData} />
+  ;
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchData(true);
+  };
 
   return (
     <FlatList
@@ -59,6 +67,13 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       renderItem={({ item }) => <ListItem item={item} theme={theme} />}
       initialNumToRender={10}
       maxToRenderPerBatch={10}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={theme === "dark" ? "#fff" : "#000"}
+        />
+      }
     />
   );
 };
