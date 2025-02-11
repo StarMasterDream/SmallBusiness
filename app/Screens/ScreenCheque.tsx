@@ -4,7 +4,19 @@ import axios from "axios";
 import ListItem from "../components/ListItem";
 import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
-import { RemoteData } from "../components/types";
+//import { RemoteData } from "../components/types";
+
+interface RemoteData {
+  Number: string;
+  Organization: string;
+  Storage: string;
+  Counterparty: string;
+  TTN: string;
+  DateTime: string;
+  Summ: number;
+  Currency: string;
+  User: string;
+}
 
 const ScreenCheque = ({ theme }: { theme: string }) => {
   const [remoteData, setRemoteData] = useState<RemoteData[]>([]);
@@ -32,13 +44,13 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
         throw new Error("Ошибка формата данных: ожидается массив");
       }
     } catch (err) {
-      console.error("Ошибка при загрузке данных Чеки:", err);
+      //console.error("Ошибка при загрузке данных Чеки:", err);
       setError("Ошибка загрузки данных. Попробуйте снова.");
-      if (axios.isAxiosError(err)) {
-        console.log('Status in ScreenCheque:', err.response?.status);
-        console.log('Headers in ScreenCheque:', err.response?.headers);
-        console.log('Server in response:', err.response?.data);
-      }
+      //if (axios.isAxiosError(err)) {
+      //  console.log('Status in ScreenCheque:', err.response?.status);
+      //  console.log('Headers in ScreenCheque:', err.response?.headers);
+      //  console.log('Server in response:', err.response?.data);
+      //}
     } finally {
       if (!isRefreshing) setLoading(false);
       setRefreshing(false);
