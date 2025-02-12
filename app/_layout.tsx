@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import ThemeProvider, { useTheme } from "./theme-context";
+import { ProfileProvider } from './components/profile-context';
 
 function StackLayoutContent() {
   const { theme } = useTheme();
@@ -48,8 +49,10 @@ function StackLayoutContent() {
 
 export default function StackLayout() {
   return (
-    <ThemeProvider>
-      <StackLayoutContent />
-    </ThemeProvider>
+    <ProfileProvider>
+        <ThemeProvider>
+        <StackLayoutContent />
+      </ThemeProvider>
+    </ProfileProvider>
   );
 }

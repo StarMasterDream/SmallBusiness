@@ -1,21 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme-context';
+import { useProfile } from '../components/profile-context';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { theme } = useTheme();
+  const { profileData, clearProfile } = useProfile();
 
   const isLightTheme = theme === 'light';
   const statusBarStyle = isLightTheme ? 'dark-content' : 'light-content';
   const statusBarBackgroundColor = isLightTheme ? '#F2F2F7' : '#1C1C1E';
-
-  useEffect(() => {
-  }, [theme]);
 
   return (
     <>
@@ -31,28 +30,30 @@ export default function ProfileScreen() {
               source={require('../../assets/images/adaptive-icon.png')}
               style={styles.profileImage}
             />
-            <Text style={[styles.name, { color: isLightTheme ? '#000' : '#FFF' }]}>Ян Греку</Text>
+            <Text style={[styles.name, { color: isLightTheme ? '#000' : '#FFF' }]}>
+              {profileData?.User || "Гость"}
+            </Text>
             <TouchableOpacity
-  style={styles.photoButton}
-  onPress={async () => {
-    try {
-      await SecureStore.deleteItemAsync("user"); // Удаляем пользователя из SecureStore
-      router.replace("../(authorization)/login"); // Перенаправляем на экран логина
-    } catch (error) {
-      console.error("Ошибка при выходе:", error);
-    }
-  }}
->
-  <Text style={[styles.exitButtonText, { color: "red" }]}>Выйти</Text>
-  <Ionicons name="exit" size={16} color="red" />
-</TouchableOpacity>
-
+              style={styles.photoButton}
+              onPress={async () => {
+                try {
+                  await SecureStore.deleteItemAsync("user");
+                  clearProfile();
+                  router.replace("../(authorization)/login");
+                } catch (error) {
+                  console.error("Ошибка при выходе:", error);
+                }
+              }}
+            >
+              <Text style={[styles.exitButtonText, { color: "red" }]}>Выйти</Text>
+              <Ionicons name="exit" size={16} color="red" />
+            </TouchableOpacity>
           </View>
 
           <View style={[styles.settingsSection, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
             <TouchableOpacity
-            style={[styles.menuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
-            onPress={() => router.push("/settingsProfile")}
+              style={[styles.menuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
+              onPress={() => router.push("/settingsProfile")}
             >
               <Ionicons name="person-outline" size={24} color="#FF2D55" />
               <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Мой профиль</Text>
