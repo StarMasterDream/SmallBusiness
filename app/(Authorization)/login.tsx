@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator, StatusBar } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator, StatusBar, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../theme-context';
 import base64 from 'base-64';
+import * as SecureStore from 'expo-secure-store';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { useTheme } from '../theme-context';
 import { useProfile } from '../components/profile-context';
+
+// Условное хранилище
+const storeData = async (key: string, value: any) => {
+  if (Platform.OS === 'web') {
+    localStorage.setItem(key, JSON.stringify(value)); // Для веба используем localStorage
+  } else {
+    await SecureStore.setItemAsync(key, JSON.stringify(value)); // Для мобильных устройств - SecureStore
+  }
+};
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -24,7 +34,7 @@ const Login = () => {
       const authString = `${email}:${password}`;
       const encoded = base64.encode(authString);
 
-      const response = await fetch('https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Login', { // https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Login and http://DESKTOP-MITLV5M:8080/1C/hs/trade/Login
+      const response = await fetch('https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Login', {
         method: 'GET',
         headers: { 
           'Authorization': encoded
@@ -45,12 +55,12 @@ const Login = () => {
         throw new Error('Авторизация не пройдена');
       }
 
-      // Сохраняем данные в SecureStore
-      await SecureStore.setItemAsync('user', JSON.stringify({
+      // Сохраняем данные в хранилище
+      await storeData('user', {
         email,
         password,
         authData: data
-      }));
+      });
 
       // Обновляем контекст профиля
       setProfileData(data);
@@ -72,10 +82,7 @@ const Login = () => {
             backgroundColor={statusBarBackgroundColor}
           />
     <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: isLightTheme ? '#FFFFFF' : '#1E1E1E' },
-      ]}
+      style={[styles.container, { backgroundColor: isLightTheme ? '#FFFFFF' : '#1E1E1E' }]}
     >
       <Text
         style={[styles.title, { color: isLightTheme ? '#000000' : '#FFFFFF' }]}
@@ -86,13 +93,10 @@ const Login = () => {
         placeholder="Email"
         maxLength={50}
         placeholderTextColor={isLightTheme ? '#888888' : '#CCCCCC'}
-        style={[
-          styles.input,
-          {
-            backgroundColor: isLightTheme ? '#F9F9F9' : '#2C2C2C',
-            color: isLightTheme ? '#000000' : '#FFFFFF',
-          },
-        ]}
+        style={[styles.input, {
+          backgroundColor: isLightTheme ? '#F9F9F9' : '#2C2C2C',
+          color: isLightTheme ? '#000000' : '#FFFFFF',
+        }]}
         value={email}
         onChangeText={text => setEmail(text.replace(/\s/g, ''))}
       />
@@ -100,13 +104,10 @@ const Login = () => {
         placeholder="Пароль"
         maxLength={15}
         placeholderTextColor={isLightTheme ? '#888888' : '#CCCCCC'}
-        style={[
-          styles.input,
-          {
-            backgroundColor: isLightTheme ? '#F9F9F9' : '#2C2C2C',
-            color: isLightTheme ? '#000000' : '#FFFFFF',
-          },
-        ]}
+        style={[styles.input, {
+          backgroundColor: isLightTheme ? '#F9F9F9' : '#2C2C2C',
+          color: isLightTheme ? '#000000' : '#FFFFFF',
+        }]}
         secureTextEntry
         value={password}
         onChangeText={text => setPassword(text.replace(/\s/g, ''))}
@@ -116,12 +117,11 @@ const Login = () => {
       ) : (
         <Button title="Войти" onPress={handleLogin} />
       )}
-
     </SafeAreaView>
     </>
   );
 };
-// <Button title="Регистрация" onPress={() => router.replace('/register')} />
+
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 16 },
   title: { fontSize: 24, marginBottom: 16, textAlign: 'center' },

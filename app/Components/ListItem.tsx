@@ -1,7 +1,19 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import ItemRow from "./ItemRow";
-import { RemoteData } from "./types";
+import RemoteData from "../../utils/types";
+
+//interface RemoteData {
+//  Number: string;
+//  Organization: string;
+//  Storage: string;
+//  Counterparty: string;
+//  TTN: string;
+//  DateTime: string;
+//  Summ: number;
+//  Curency: string;
+//  User: string;
+//}
 
 const ListItem = ({ item, theme }: { item: RemoteData; theme: string }) => {
   const [showAllRows, setShowAllRows] = useState(false);
@@ -41,16 +53,21 @@ const styles = StyleSheet.create({
     padding: 16,
     margin: 10,
     elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
+    ...(Platform.OS === 'web'
+          ? { 
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.4)" 
+            } 
+          : {
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.4,
+              shadowRadius: 4,
+            }
+        ),
   },
   cardDark: {
     backgroundColor: "#2C2C2C",
     borderColor: "#555",
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
   },
 });
 

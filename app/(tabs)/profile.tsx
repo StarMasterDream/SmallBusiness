@@ -6,6 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme-context';
 import { useProfile } from '../components/profile-context';
+import { loadData, removeData } from '../../utils/storage';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -36,18 +37,18 @@ export default function ProfileScreen() {
             <TouchableOpacity
               style={styles.photoButton}
               onPress={async () => {
-                try {
-                  await SecureStore.deleteItemAsync("user");
-                  clearProfile();
-                  router.replace("../(authorization)/login");
-                } catch (error) {
-                  console.error("Ошибка при выходе:", error);
-                }
+              try {
+              await removeData("user");
+                clearProfile();
+                router.replace("../(authorization)/login");
+              } catch (error) {
+                console.error("Ошибка при выходе:", error);
+              }
               }}
-            >
-              <Text style={[styles.exitButtonText, { color: "red" }]}>Выйти</Text>
-              <Ionicons name="exit" size={16} color="red" />
-            </TouchableOpacity>
+              >
+  <Text style={[styles.exitButtonText, { color: "red" }]}>Выйти</Text>
+  <Ionicons name="exit" size={16} color="red" />
+</TouchableOpacity>
           </View>
 
           <View style={[styles.settingsSection, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>

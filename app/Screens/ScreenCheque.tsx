@@ -4,19 +4,19 @@ import axios from "axios";
 import ListItem from "../components/ListItem";
 import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
-//import { RemoteData } from "../components/types";
+import RemoteData from "../../utils/types";
 
-interface RemoteData {
-  Number: string;
-  Organization: string;
-  Storage: string;
-  Counterparty: string;
-  TTN: string;
-  DateTime: string;
-  Summ: number;
-  Currency: string;
-  User: string;
-}
+//interface RemoteData {
+//  Number: string;
+//  Organization: string;
+//  Storage: string;
+//  Counterparty: string;
+//  TTN: string;
+//  DateTime: string;
+//  Summ: number;
+//  Currency: string;
+//  User: string;
+//}
 
 const ScreenCheque = ({ theme }: { theme: string }) => {
   const [remoteData, setRemoteData] = useState<RemoteData[]>([]);

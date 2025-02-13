@@ -2,12 +2,26 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Platform, StatusBar, View, ActivityIndicator, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useTheme } from "../theme-context";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+
+import { useTheme } from "../theme-context";
 import ScreenCheque from "../screens/ScreenCheque";
 import ScreenBasket from "../screens/ScreenBasket";
 import { useProfile } from "../components/profile-context";
+import { loadData, removeData } from '../../utils/storage';
+
+
+// Условная загрузка данных
+//const loadData = async (key: string) => {
+//  if (Platform.OS === 'web') {
+//    const storedUser = localStorage.getItem(key);
+//    return storedUser ? JSON.parse(storedUser) : null;
+//  } else {
+//    const storedUser = await SecureStore.getItemAsync(key);
+//    return storedUser ? JSON.parse(storedUser) : null;
+//  }
+//};
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -22,16 +36,15 @@ export default function Index() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const storedUser = await SecureStore.getItemAsync('user');
+        const userData = await loadData('user');
         
-        if (!storedUser) {
+        if (!userData) {
           router.replace('../(authorization)/login');
           return;
         }
   
-        const { authData } = JSON.parse(storedUser);
+        const { authData } = userData;
         
-        // Можно добавить дополнительную проверку токена/сессии
         if (!authData?.Authorized) {
           throw new Error('Session expired');
         }
@@ -40,15 +53,15 @@ export default function Index() {
         
       } catch (error) {
         console.error('Auth check error:', error);
-        await SecureStore.deleteItemAsync('user');
+        await removeData('user');
         router.replace('../(authorization)/login');
       } finally {
-        setLoading(false); // Важно: обновляем состояние загрузки
+        setLoading(false);
       }
     };
   
     checkAuth();
-  }, []);
+  }, []);  
 
   const statusBarStyle = isLightTheme ? "dark-content" : "light-content";
   const statusBarBackgroundColor = isLightTheme ? "#F2F2F7" : "#1C1C1E";
