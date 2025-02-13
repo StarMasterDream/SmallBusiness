@@ -24,7 +24,7 @@ const Login = () => {
       const authString = `${email}:${password}`;
       const encoded = base64.encode(authString);
 
-      const response = await fetch('http://DESKTOP-MITLV5M:8080/1C/hs/trade/Login', {
+      const response = await fetch('https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Login', { // https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Login and http://DESKTOP-MITLV5M:8080/1C/hs/trade/Login
         method: 'GET',
         headers: { 
           'Authorization': encoded

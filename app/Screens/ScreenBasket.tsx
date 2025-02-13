@@ -46,7 +46,7 @@ function ScreenBasket({ theme }: { theme: string }) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://DESKTOP-MITLV5M:8080/1C/hs/trade/Goods', { //  https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods
+        const response = await fetch('https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods', { //  https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods and http://DESKTOP-MITLV5M:8080/1C/hs/trade/Goods
           method: 'GET',
           headers: new Headers({
             Authorization: 'd2ViOndlYg=='

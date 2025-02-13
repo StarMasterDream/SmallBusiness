@@ -30,7 +30,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       setError(null);
       
       const response = await axios.get(
-        "http://DESKTOP-MITLV5M:8080/1C/hs/trade/ReceiptOfGoods", // https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods
+        "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods", // https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods and http://DESKTOP-MITLV5M:8080/1C/hs/trade/ReceiptOfGoods
         {
           headers: {
             Authorization: 'd2ViOndlYg=='
