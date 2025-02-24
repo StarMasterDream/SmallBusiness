@@ -5,6 +5,8 @@ import ListItem from "../components/ListItem";
 import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
 import RemoteData from "../../utils/types";
+import base64 from 'base-64'; 
+import { loadData } from '../../utils/storage';
 
 //interface RemoteData {
 //  Number: string;
@@ -29,11 +31,19 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       setLoading(true);
       setError(null);
       
+      // Загружаем данные пользователя
+      const userData = await loadData('user');
+      if (!userData) throw new Error('User not logged in');
+      
+      // Формируем авторизационную строку
+      const authString = `${userData.email}:${userData.password}`;
+      const encoded = base64.encode(authString);
+
       const response = await axios.get(
-        "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods", // https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods and http://DESKTOP-MITLV5M:8080/1C/hs/trade/ReceiptOfGoods
+        "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods",
         {
           headers: {
-            Authorization: 'd2ViOndlYg=='
+            Authorization: encoded // Используем динамический токен
           }
         }
       );

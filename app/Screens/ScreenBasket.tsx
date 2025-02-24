@@ -14,6 +14,8 @@ import SaleFloatingButton from "../components/SaleFloatingButton";
 import ModalContent from "../components/ModalContent";
 import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
+import base64 from 'base-64'; // Добавляем импорт
+import { loadData } from '../../utils/storage';
 
 interface Folder {
   Kod: string;
@@ -46,11 +48,19 @@ function ScreenBasket({ theme }: { theme: string }) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods', { //  https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods and http://DESKTOP-MITLV5M:8080/1C/hs/trade/Goods
+        // Загружаем данные пользователя
+        const userData = await loadData('user');
+        if (!userData) throw new Error('User not logged in');
+        
+        // Формируем авторизационную строку
+        const authString = `${userData.email}:${userData.password}`;
+        const encoded = base64.encode(authString);
+
+        const response = await fetch('https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods', {
           method: 'GET',
-          headers: new Headers({
-            Authorization: 'd2ViOndlYg=='
-          })
+          headers: { 
+            'Authorization': encoded // Используем динамический токен
+          }
         });
   
         if (!response.ok) {
