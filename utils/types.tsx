@@ -1,4 +1,5 @@
 export interface RemoteData {
+  GUID: string;
   Number: string;
   Organization: string;
   Storage: string;

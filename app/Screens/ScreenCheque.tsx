@@ -60,12 +60,9 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       );
 
       if (Array.isArray(response.data)) {
-        setRemoteData(response.data.map((item: any) => ({
-          ...item,
-          DateTime: new Date(item.DateTime).toLocaleString()
-        })));
+        setRemoteData(response.data); // Убрать ненужный map
       } else {
-        throw new Error("Invalid data format");
+        throw new Error("Ожидается массив данных");
       }
     } catch (err) {
       let errorMessage = "Ошибка загрузки данных";
@@ -121,7 +118,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
         style={{ backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}
         contentContainerStyle={{ flexGrow: 1 }}
         data={filteredData}
-        keyExtractor={(item) => item.Number}
+        keyExtractor={(item) => item.GUID}
         renderItem={({ item }) => <ListItem item={item} theme={theme} />}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
