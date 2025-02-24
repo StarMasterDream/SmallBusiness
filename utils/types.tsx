@@ -1,4 +1,4 @@
-type RemoteData = {
+export interface RemoteData {
   Number: string;
   Organization: string;
   Storage: string;
@@ -8,6 +8,4 @@ type RemoteData = {
   Summ: number;
   Currency: string;
   User: string;
-};
-
-export default RemoteData;
+}

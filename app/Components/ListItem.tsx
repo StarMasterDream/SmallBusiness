@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import ItemRow from "./ItemRow";
-import RemoteData from "../../utils/types";
+import { RemoteData } from "../../utils/types";
 
 //interface RemoteData {
 //  Number: string;

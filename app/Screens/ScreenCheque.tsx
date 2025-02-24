@@ -1,103 +1,163 @@
-import React, { useState, useEffect } from "react";
-import { FlatList, RefreshControl } from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
+import { 
+  FlatList, 
+  RefreshControl, 
+  TextInput, 
+  View, 
+  StyleSheet,
+  Text,
+  Alert
+} from "react-native";
 import axios from "axios";
 import ListItem from "../components/ListItem";
 import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
-import RemoteData from "../../utils/types";
-import base64 from 'base-64'; 
-import { loadData } from '../../utils/storage';
-
-//interface RemoteData {
-//  Number: string;
-//  Organization: string;
-//  Storage: string;
-//  Counterparty: string;
-//  TTN: string;
-//  DateTime: string;
-//  Summ: number;
-//  Currency: string;
-//  User: string;
-//}
+import { RemoteData } from "../../utils/types";
+import base64 from 'base-64';
+import { loadData, removeData } from '../../utils/storage';
+import { useRouter } from "expo-router";
 
 const ScreenCheque = ({ theme }: { theme: string }) => {
   const [remoteData, setRemoteData] = useState<RemoteData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const filteredData = useMemo(() => {
+    if (!searchQuery) return remoteData;
+    
+    const lowerQuery = searchQuery.toLowerCase();
+    return remoteData.filter(item => {
+      return Object.entries(item).some(([key, value]) => {
+        if (value === null || value === undefined) return false;
+        return String(value).toLowerCase().includes(lowerQuery);
+      });
+    });
+  }, [remoteData, searchQuery]);
 
   const fetchData = async (isRefreshing?: boolean) => {
     try {
       setLoading(true);
       setError(null);
       
-      // Загружаем данные пользователя
       const userData = await loadData('user');
-      if (!userData) throw new Error('User not logged in');
-      
-      // Формируем авторизационную строку
+      if (!userData) {
+        router.replace('/(authorization)/login');
+        return;
+      }
+
       const authString = `${userData.email}:${userData.password}`;
       const encoded = base64.encode(authString);
 
       const response = await axios.get(
         "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods",
         {
-          headers: {
-            Authorization: encoded // Используем динамический токен
-          }
+          headers: { Authorization: encoded },
+          timeout: 10000
         }
       );
-  
-      //if (Array.isArray(response.data)) {
-        setRemoteData(response.data);
-      //} else {
-      //  throw new Error("Ошибка формата данных: ожидается массив");
-      //}
+
+      if (Array.isArray(response.data)) {
+        setRemoteData(response.data.map((item: any) => ({
+          ...item,
+          DateTime: new Date(item.DateTime).toLocaleString()
+        })));
+      } else {
+        throw new Error("Invalid data format");
+      }
     } catch (err) {
-      console.error("Ошибка при загрузке данных Чеки:", err);
-      setError("Ошибка загрузки данных. Попробуйте снова.");
-      //if (axios.isAxiosError(err)) {
-      //  console.log('Status in ScreenCheque:', err.response?.status);
-      //  console.log('Headers in ScreenCheque:', err.response?.headers);
-      //  console.log('Server in response:', err.response?.data);
-      //}
+      let errorMessage = "Ошибка загрузки данных";
+      
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 401) {
+          await removeData('user');
+          router.replace('/(authorization)/login');
+          return;
+        }
+        errorMessage = `Ошибка: ${err.response?.status || err.code}`;
+      }
+      
+      setError(errorMessage);
+      Alert.alert("Ошибка", errorMessage);
     } finally {
       if (!isRefreshing) setLoading(false);
       setRefreshing(false);
     }
   };
-  
+
   useEffect(() => {
     fetchData();
   }, []);
-
-  if (loading && remoteData.length === 0) return <LoadingView theme={theme} />;
-  if (error && remoteData.length === 0) return <ErrorView error={error} theme={theme} onRetry={fetchData} />
-  ;
 
   const handleRefresh = () => {
     setRefreshing(true);
     fetchData(true);
   };
 
+  if (loading && remoteData.length === 0) return <LoadingView theme={theme} />;
+  if (error && remoteData.length === 0) return <ErrorView error={error} theme={theme} onRetry={fetchData} />;
+
   return (
-    <FlatList
-      style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}
-      contentContainerStyle={{ paddingBottom: 20 }}
-      data={remoteData ?? []}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => <ListItem item={item} theme={theme} />}
-      initialNumToRender={10}
-      maxToRenderPerBatch={10}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
-          tintColor={theme === "dark" ? "#fff" : "#000"}
-        />
-      }
-    />
+    <View style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}>
+      <TextInput
+        placeholder="Поиск по всем полям..."
+        placeholderTextColor={theme === "dark" ? "#888" : "#666"}
+        style={[
+          styles.searchInput,
+          {
+            backgroundColor: theme === "dark" ? "#2C2C2C" : "#FFF",
+            color: theme === "dark" ? "#FFF" : "#000",
+            borderColor: theme === "dark" ? "#444" : "#CCC"
+          }
+        ]}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        clearButtonMode="while-editing"
+      />
+
+      <FlatList
+        style={{ backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        data={filteredData}
+        keyExtractor={(item) => item.Number}
+        renderItem={({ item }) => <ListItem item={item} theme={theme} />}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={{ color: theme === "dark" ? "#FFF" : "#000" }}>
+              {searchQuery ? "Ничего не найдено" : "Нет данных"}
+            </Text>
+          </View>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={[theme === "dark" ? "#fff" : "#000"]}
+            progressBackgroundColor={theme === "dark" ? "#1E1E1E" : "#FFF"}
+          />
+        }
+      />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  searchInput: {
+    height: 40,
+    margin: 10,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    fontSize: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+});
 
 export default ScreenCheque;
