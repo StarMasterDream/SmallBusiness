@@ -111,7 +111,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
         ]}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        clearButtonMode="while-editing"
+        clearButtonMode="while-editing" // iOS only
       />
 
       <FlatList
