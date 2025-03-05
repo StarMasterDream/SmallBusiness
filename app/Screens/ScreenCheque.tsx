@@ -14,8 +14,9 @@ import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
 import { RemoteData } from "../../utils/types";
 import base64 from 'base-64';
-import { loadData, removeData } from '../../utils/storage';
+import { loadData, removeData, saveCache, loadCache } from '../../utils/storage';
 import { useRouter } from "expo-router";
+import NetInfo from "@react-native-community/netinfo";
 
 const ScreenCheque = ({ theme }: { theme: string }) => {
   const [remoteData, setRemoteData] = useState<RemoteData[]>([]);
@@ -23,6 +24,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isOffline, setIsOffline] = useState(false);
   const router = useRouter();
 
   const filteredData = useMemo(() => {
@@ -38,54 +40,67 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
   }, [remoteData, searchQuery]);
 
   const fetchData = async (isRefreshing?: boolean) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      
-      const userData = await loadData('user');
-      if (!userData) {
-        router.replace('/(authorization)/login');
-        return;
-      }
-
-      const authString = `${userData.email}:${userData.password}`;
-      const encoded = base64.encode(authString);
-
-      const response = await axios.get(
-        "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods",
-        {
-          headers: { Authorization: encoded },
-          timeout: 10000
+      const netState = await NetInfo.fetch();
+      if (!netState.isConnected) {
+        setIsOffline(true);
+        let cachedData = await loadCache("remoteData"); // Используем loadCache
+        if (!cachedData) {
+          cachedData = [];
         }
-      );
-
-      if (Array.isArray(response.data)) {
-        setRemoteData(response.data); // Убрать ненужный map
+        setRemoteData(cachedData);
+        Alert.alert("⚠️Оффлайн режим⚠️", "Отсутствует интернет. Используются кэшированные данные.");
       } else {
-        throw new Error("Ожидается массив данных");
-      }
-    } catch (err) {
-      let errorMessage = "Ошибка загрузки данных";
-      
-      if (axios.isAxiosError(err)) {
-        if (err.response?.status === 401) {
-          await removeData('user');
+        setIsOffline(false);
+        const userData = await loadData('user');
+        if (!userData) {
           router.replace('/(authorization)/login');
           return;
         }
-        errorMessage = `Ошибка: ${err.response?.status || err.code}`;
+        const authString = `${userData.email}:${userData.password}`;
+        const encoded = base64.encode(authString);
+
+        try {
+          const response = await axios.get(
+            "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods",
+            {
+              headers: { Authorization: encoded },
+              timeout: 10000
+            }
+          );
+          if (Array.isArray(response.data)) {
+            setRemoteData(response.data);
+            await saveCache("remoteData", response.data); // Используем saveCache
+          } else {
+            throw new Error("Ожидается массив данных");
+          }
+        } catch (serverErr: any) {
+          let cachedData = await loadCache("remoteData"); // Используем loadCache
+          if (!cachedData) {
+            cachedData = [];
+          }
+          setRemoteData(cachedData);
+          setIsOffline(true);
+          Alert.alert("⚠️Оффлайн режим⚠️", "Нет доступа к серверу. Используются кэшированные данные.");
+        }
       }
-      
-      setError(errorMessage);
-      Alert.alert("Ошибка", errorMessage);
+    } catch (err: any) {
+      // ... обработка ошибок
     } finally {
-      if (!isRefreshing) setLoading(false);
+      setLoading(false);
       setRefreshing(false);
     }
   };
 
   useEffect(() => {
     fetchData();
+    // Подписка на изменения статуса подключения
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsOffline(!state.isConnected);
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleRefresh = () => {
@@ -98,6 +113,11 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}>
+      {isOffline && (
+        <View style={styles.offlineBanner}>
+          <Text style={styles.offlineBannerText}>Оффлайн режим</Text>
+        </View>
+      )}
       <TextInput
         placeholder="Поиск по всем полям..."
         placeholderTextColor={theme === "dark" ? "#888" : "#666"}
@@ -111,7 +131,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
         ]}
         value={searchQuery}
         onChangeText={setSearchQuery}
-        clearButtonMode="while-editing" // iOS only
+        clearButtonMode="while-editing"
       />
 
       <FlatList
@@ -154,6 +174,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  offlineBanner: {
+    backgroundColor: "#FFCC00",
+    padding: 10,
+    alignItems: "center",
+  },
+  offlineBannerText: {
+    color: "#000",
+    fontWeight: "bold",
   },
 });
 

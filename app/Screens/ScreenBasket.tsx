@@ -14,7 +14,7 @@ import SaleFloatingButton from "../components/SaleFloatingButton";
 import ModalContent from "../components/ModalContent";
 import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
-import base64 from 'base-64'; // Добавляем импорт
+import base64 from 'base-64';
 import { loadData } from '../../utils/storage';
 
 interface Folder {
@@ -106,22 +106,6 @@ function ScreenBasket({ theme }: { theme: string }) {
       return acc;
     }, []);
   };
-  
-  /*const filteredData = useMemo(
-    () =>
-      data.length > 0
-        ? Array.from(
-            new Map(
-              flattenGroups(data)
-                .filter((group) =>
-                  group.Name.toLowerCase().includes(searchQuery.toLowerCase())
-                )
-                .map((item) => [item.GUID, item])
-            ).values()
-          )
-        : [],
-    [data, searchQuery]
-  );*/
 
   const filteredData = useMemo(
     () =>
@@ -197,9 +181,6 @@ function ScreenBasket({ theme }: { theme: string }) {
       <SaleFloatingButton onPress={() => alert("Данная Функция в разработке")} />
       <Modal
         isVisible={modalVisible}
-        //onSwipeComplete={closeModal}
-        //onSwipeComplete={refreshing}
-        //swipeDirection="down"
         style={styles.modalWrapper}
       >
         <KeyboardAvoidingView
