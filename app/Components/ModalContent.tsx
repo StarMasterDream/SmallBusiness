@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  RefreshControl
 } from "react-native";
 import styles from "../styles/modalContentStyles";
 
@@ -28,6 +29,9 @@ interface ModalContentProps {
   addToCart: (item: Folder) => void;
   insets: { top: number; bottom: number };
   loading: boolean;
+  isOffline: boolean;           // новый проп для оффлайн-режима
+  refreshing: boolean;          // состояние обновления
+  onRefresh: () => void;        // функция обновления
 }
 
 const ModalContent: React.FC<ModalContentProps> = ({
@@ -39,6 +43,9 @@ const ModalContent: React.FC<ModalContentProps> = ({
   addToCart,
   insets,
   loading,
+  isOffline,
+  refreshing,
+  onRefresh
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>(
     {}
@@ -127,6 +134,13 @@ const ModalContent: React.FC<ModalContentProps> = ({
           },
         ]}
       >
+        {/* Баннер оффлайн-режима */}
+        {isOffline && (
+          <View style={styles.offlineBanner}>
+            <Text style={styles.offlineBannerText}>Оффлайн режим</Text>
+          </View>
+        )}
+
         <TextInput
           style={[
             styles.searchInput,
@@ -150,6 +164,14 @@ const ModalContent: React.FC<ModalContentProps> = ({
             data={filteredData}
             keyExtractor={(item) => item.GUID}
             renderItem={renderItem}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[theme === "dark" ? "#fff" : "#000"]}
+                progressBackgroundColor={theme === "dark" ? "#1E1E1E" : "#FFF"}
+              />
+            }
             ListEmptyComponent={
               <Text
                 style={[

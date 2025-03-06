@@ -4,6 +4,8 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  RefreshControl
 } from "react-native";
 import Modal from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,7 +17,8 @@ import ModalContent from "../components/ModalContent";
 import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
 import base64 from "base-64";
-import { loadData } from "../../utils/storage";
+import { loadData, saveCache, loadCache } from "../../utils/storage";
+import NetInfo from "@react-native-community/netinfo";
 
 interface Folder {
   Kod: string;
@@ -39,6 +42,8 @@ function ScreenBasket({ theme }: { theme: string }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+  const [isOffline, setIsOffline] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
   const closeModal = () => {
@@ -46,25 +51,36 @@ function ScreenBasket({ theme }: { theme: string }) {
     setSearchQuery("");
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // Загружаем данные пользователя
+  // Функция загрузки данных с проверкой подключения
+  const fetchGoodsData = async () => {
+    setLoading(true);
+    try {
+      const netState = await NetInfo.fetch();
+      if (!netState.isConnected) {
+        setIsOffline(true);
+        const cachedData = await loadCache("goodsData");
+        setData(cachedData || []);
+        Alert.alert("⚠️Оффлайн режим⚠️", "Отсутствует интернет. Используются кэшированные данные.");
+      } else {
+        setIsOffline(false);
         const userData = await loadData("user");
         if (!userData) throw new Error("User not logged in");
 
-        // Формируем авторизационную строку
         const authString = `${userData.email}:${userData.password}`;
         const encoded = base64.encode(authString);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         const response = await fetch(
           "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods",
           {
             method: "GET",
             headers: { Authorization: encoded },
+            signal: controller.signal,
           }
         );
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           throw new Error(`Ошибка HTTP: ${response.status}`);
@@ -87,14 +103,38 @@ function ScreenBasket({ theme }: { theme: string }) {
         }));
 
         setData(groupsData);
-      } catch (error) {
-        console.error("Ошибка при загрузке данных в Modal:", error);
-      } finally {
-        setLoading(false);
+        await saveCache("goodsData", groupsData);
       }
-    };
+    } catch (error) {
+      // Обработка ошибки при недоступности сервера
+      setIsOffline(true);
+      const cachedData = await loadCache("goodsData");
+      setData(cachedData || []);
+      Alert.alert("⚠️Оффлайн режим⚠️", "Нет доступа к серверу. Используются кэшированные данные.");
+      //console.error("Ошибка при загрузке данных:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  // Обработчик обновления (pull-to-refresh)
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchGoodsData();
+    setRefreshing(false);
+  };
+
+  // Подписка на изменение статуса сети
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsOffline(!state.isConnected);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Первоначальная загрузка данных
+  useEffect(() => {
+    fetchGoodsData();
   }, []);
 
   const flattenGroups = (groups: Folder[]): Folder[] => {
@@ -204,6 +244,9 @@ function ScreenBasket({ theme }: { theme: string }) {
             addToCart={addToCart}
             insets={insets}
             loading={loading}
+            isOffline={isOffline}         // передаем флаг оффлайн
+            refreshing={refreshing}         // состояние обновления
+            onRefresh={handleRefresh}       // функция обновления
           />
         </KeyboardAvoidingView>
       </Modal>

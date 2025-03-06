@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   // Основные контейнеры
   modalContainer: {
     flex: 1,
-    padding: 16,
+    //padding: 16,
     backgroundColor: "#FFFFFF",
   },
   modalBackgroundDark: {
@@ -124,6 +124,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  offlineBanner: {
+    backgroundColor: "#FFCC00",
+    padding: 5,
+    marginBottom: 5,
+    alignItems: "center",
+    borderRadius: 12,
+  },
+  offlineBannerText: {
+    color: "#000",
+    fontWeight: "bold",
   },
 });
 
