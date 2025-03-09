@@ -28,6 +28,17 @@ export default function TabsNavigator() {
       }}
     >
       <Tabs.Screen
+        name="documents"
+        options={{
+          title: "Документы",
+          headerStyle: { backgroundColor: theme === "light" ? "#fff" : "#333" },
+          headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="document" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="index"
         options={{
           title: "Главная",

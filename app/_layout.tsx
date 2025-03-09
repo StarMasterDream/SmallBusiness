@@ -43,6 +43,24 @@ function StackLayoutContent() {
           headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
         }}
       />
+      <Stack.Screen
+        name="espenseDocument"
+        options={{
+          title: "Документ расхода",
+          headerBackTitle: "назад",
+          headerStyle: { backgroundColor: theme === "light" ? "#fff" : "#333" },
+          headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
+        }}
+      />
+      <Stack.Screen
+        name="receiptDocument"
+        options={{
+          title: "Документ прихода",
+          headerBackTitle: "назад",
+          headerStyle: { backgroundColor: theme === "light" ? "#fff" : "#333" },
+          headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
+        }}
+      />
     </Stack>
   );
 }
