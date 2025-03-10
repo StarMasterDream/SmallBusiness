@@ -69,18 +69,18 @@ function ScreenBasket({ theme }: { theme: string }) {
         const authString = `${userData.email}:${userData.password}`;
         const encoded = base64.encode(authString);
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        //const controller = new AbortController();
+        //const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         const response = await fetch(
           "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/Goods",
           {
             method: "GET",
             headers: { Authorization: encoded },
-            signal: controller.signal,
+           //signal: controller.signal,
           }
         );
-        clearTimeout(timeoutId);
+        //clearTimeout(timeoutId);
 
         if (!response.ok) {
           throw new Error(`Ошибка HTTP: ${response.status}`);

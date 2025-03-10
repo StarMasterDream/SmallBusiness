@@ -47,7 +47,7 @@ export default function ProfileScreen() {
               }}
               >
   <Text style={[styles.exitButtonText, { color: "red" }]}>Выйти</Text>
-  <Ionicons name="exit" size={16} color="red" />
+  <Ionicons name="exit-outline" size={16} color="red" />
 </TouchableOpacity>
           </View>
 
@@ -63,7 +63,7 @@ export default function ProfileScreen() {
               style={[styles.lastMenuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
               onPress={() => router.push("/settings")}
             >
-              <MaterialIcons name="settings" size={24} color="#FF9500" />
+              <Ionicons name="settings-outline" size={24} color="#FF9500" />
               <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Настройки</Text>
             </TouchableOpacity>
           </View>
