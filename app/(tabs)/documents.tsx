@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../theme-context';
 
-export default function ProfileScreen() {
+export default function ScreenDocuments() {
   const router = useRouter();
   const { theme } = useTheme();
 
@@ -25,14 +25,14 @@ export default function ProfileScreen() {
           <View style={[styles.settingsSection, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
             <TouchableOpacity
               style={[styles.menuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
-              onPress={() => router.push({ pathname: "/receiptDocument", params: { theme } })}
+              onPress={() => router.push("/receiptDocument")}
             >
               <Ionicons name="document" size={24} color="#FF9500" />
               <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Приход</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.lastMenuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
-              onPress={() => router.push({ pathname: "/espenseDocument", params: { theme } })}
+              onPress={() => router.push("/espenseDocument")}
             >
               <Ionicons name="document" size={24} color="#FF9500" />
               <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Расход</Text>

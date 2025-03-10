@@ -1,6 +1,9 @@
+// app_layout.tsx
 import { Stack } from "expo-router";
 import ThemeProvider, { useTheme } from "./theme-context";
-import { ProfileProvider } from './components/profile-context';
+import { ProfileProvider } from "./components/profile-context";
+import { ReceiptDocumentProvider } from "../utils/ReceiptDocumentContext";
+import { EspenseDocumentProvider } from "../utils/EspenseDocumentContext";
 
 function StackLayoutContent() {
   const { theme } = useTheme();
@@ -46,7 +49,7 @@ function StackLayoutContent() {
       <Stack.Screen
         name="espenseDocument"
         options={{
-          title: "Документ расхода",
+          title: "Документы расхода",
           headerBackTitle: "назад",
           headerStyle: { backgroundColor: theme === "light" ? "#fff" : "#333" },
           headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
@@ -54,6 +57,24 @@ function StackLayoutContent() {
       />
       <Stack.Screen
         name="receiptDocument"
+        options={{
+          title: "Документы прихода",
+          headerBackTitle: "назад",
+          headerStyle: { backgroundColor: theme === "light" ? "#fff" : "#333" },
+          headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
+        }}
+      />
+      <Stack.Screen
+        name="Full_ItemEspenseDocument"
+        options={{
+          title: "Документ расхода",
+          headerBackTitle: "назад",
+          headerStyle: { backgroundColor: theme === "light" ? "#fff" : "#333" },
+          headerTitleStyle: { color: theme === "light" ? "#000" : "#fff" },
+        }}
+      />
+      <Stack.Screen
+        name="Full_ItemReceiptDocument"
         options={{
           title: "Документ прихода",
           headerBackTitle: "назад",
@@ -68,8 +89,12 @@ function StackLayoutContent() {
 export default function StackLayout() {
   return (
     <ProfileProvider>
-        <ThemeProvider>
-        <StackLayoutContent />
+      <ThemeProvider>
+        <ReceiptDocumentProvider>
+          <EspenseDocumentProvider>
+            <StackLayoutContent />
+          </EspenseDocumentProvider>
+        </ReceiptDocumentProvider>
       </ThemeProvider>
     </ProfileProvider>
   );

@@ -1,119 +1,46 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { 
-  FlatList, 
-  RefreshControl, 
-  TextInput, 
-  View, 
+import React, { useContext, useState, useMemo } from "react";
+import {
+  FlatList,
+  RefreshControl,
+  TextInput,
+  View,
   StyleSheet,
   Text,
-  Alert
 } from "react-native";
-import axios from "axios";
-import base64 from 'base-64';
 import { useRouter } from "expo-router";
-import NetInfo from "@react-native-community/netinfo";
-
-import { useTheme } from './theme-context';
-import ListItem from "./components/ListItem";
+import { useTheme } from "./theme-context";
+import ListItem from "./components/ListItemReceiptDocument";
 import LoadingView from "./components/LoadingView";
 import ErrorView from "./components/ErrorView";
-import { RemoteData } from "./../utils/types";
-import { loadData, removeData, saveCache, loadCache } from './../utils/storage';
+import { ReceiptDocumentContext } from "../utils/ReceiptDocumentContext";
 
-
-const ScreenCheque = () => {
+const ReceiptDocumentScreen = () => {
   const { theme } = useTheme();
-  const [remoteData, setRemoteData] = useState<RemoteData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { remoteData, loading, error, refreshData, isOffline } = useContext(ReceiptDocumentContext);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isOffline, setIsOffline] = useState(false);
-  const router = useRouter();
 
   const filteredData = useMemo(() => {
     if (!searchQuery) return remoteData;
-    
     const lowerQuery = searchQuery.toLowerCase();
-    return remoteData.filter(item => {
-      return Object.entries(item).some(([key, value]) => {
+    return remoteData.filter((item) =>
+      Object.entries(item).some(([key, value]) => {
         if (value === null || value === undefined) return false;
         return String(value).toLowerCase().includes(lowerQuery);
-      });
-    });
+      })
+    );
   }, [remoteData, searchQuery]);
 
-  const fetchData = async (isRefreshing?: boolean) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const netState = await NetInfo.fetch();
-      if (!netState.isConnected) {
-        setIsOffline(true);
-        let cachedData = await loadCache("remoteData"); // Используем loadCache
-        if (!cachedData) {
-          cachedData = [];
-        }
-        setRemoteData(cachedData);
-        Alert.alert("⚠️Оффлайн режим⚠️", "Отсутствует интернет. Используются кэшированные данные.");
-      } else {
-        setIsOffline(false);
-        const userData = await loadData('user');
-        if (!userData) {
-          router.replace('/(authorization)/login');
-          return;
-        }
-        const authString = `${userData.email}:${userData.password}`;
-        const encoded = base64.encode(authString);
-
-        try {
-          const response = await axios.get(
-            "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods",
-            {
-              headers: { Authorization: encoded },
-              timeout: 10000
-            }
-          );
-          if (Array.isArray(response.data)) {
-            setRemoteData(response.data);
-            await saveCache("remoteData", response.data); // Используем saveCache
-          } else {
-            throw new Error("Ожидается массив данных");
-          }
-        } catch (serverErr: any) {
-          let cachedData = await loadCache("remoteData"); // Используем loadCache
-          if (!cachedData) {
-            cachedData = [];
-          }
-          setRemoteData(cachedData);
-          setIsOffline(true);
-          Alert.alert("⚠️Оффлайн режим⚠️", "Нет доступа к серверу. Используются кэшированные данные.");
-        }
-      }
-    } catch (err: any) {
-      // ... обработка ошибок
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-    // Подписка на изменения статуса подключения
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsOffline(!state.isConnected);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
-    fetchData(true);
+    await refreshData();
+    setRefreshing(false);
   };
 
   if (loading && remoteData.length === 0) return <LoadingView theme={theme} />;
-  if (error && remoteData.length === 0) return <ErrorView error={error} theme={theme} onRetry={fetchData} />;
+  if (error && remoteData.length === 0)
+    return <ErrorView error={error} theme={theme} onRetry={refreshData} />;
 
   return (
     <View style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}>
@@ -122,6 +49,7 @@ const ScreenCheque = () => {
           <Text style={styles.offlineBannerText}>Оффлайн режим</Text>
         </View>
       )}
+
       <TextInput
         placeholder="Поиск по всем полям..."
         placeholderTextColor={theme === "dark" ? "#888" : "#666"}
@@ -130,8 +58,8 @@ const ScreenCheque = () => {
           {
             backgroundColor: theme === "dark" ? "#2C2C2C" : "#FFF",
             color: theme === "dark" ? "#FFF" : "#000",
-            borderColor: theme === "dark" ? "#444" : "#CCC"
-          }
+            borderColor: theme === "dark" ? "#444" : "#CCC",
+          },
         ]}
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -190,4 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScreenCheque;
+export default ReceiptDocumentScreen;

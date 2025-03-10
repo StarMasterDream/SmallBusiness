@@ -38,7 +38,7 @@ export const saveCache = async (key: string, value: any) => {
       await AsyncStorage.setItem(key, JSON.stringify(value));
     }
   } catch (e) {
-    console.log('Error saving cache:', e);
+    console.log('Ошибка сохранения кэша:', e, key);
   }
 };
 
@@ -52,7 +52,42 @@ export const loadCache = async (key: string) => {
       return stored ? JSON.parse(stored) : null;
     }
   } catch (e) {
-    console.log('Error loading cache:', e);
+    console.log('Ошибка при загрузке кэша:', e);
     return null;
+  }
+};
+
+export const clearCache = async (key: string) => {
+  try {
+    if (Platform.OS === 'web') {
+      localStorage.removeItem(key);
+    } else {
+      await AsyncStorage.removeItem(key);
+    }
+  } catch (e) {
+    console.log('Ошибка при очистке кэша::', e);
+  }
+};
+
+export const getTotalCacheSize = async (): Promise<number> => {
+  try {
+    if (Platform.OS === 'web') return 0;
+    
+    const allKeys = await AsyncStorage.getAllKeys();
+    let total = 0;
+    
+    for (const key of allKeys) {
+      try {
+        const value = await AsyncStorage.getItem(key);
+        total += value?.length || 0;
+      } catch (e) {
+        console.error(`Error reading key ${key}:`, e);
+      }
+    }
+    
+    return total;
+  } catch (error) {
+    console.error('Error calculating total cache size:', error);
+    return 0;
   }
 };

@@ -14,7 +14,7 @@ import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
 import { RemoteData } from "../../utils/types";
 import base64 from 'base-64';
-import { loadData, removeData, saveCache, loadCache } from '../../utils/storage';
+import { loadData, removeData, saveCache, loadCache, clearCache } from '../../utils/storage';
 import { useRouter } from "expo-router";
 import NetInfo from "@react-native-community/netinfo";
 
@@ -72,6 +72,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
           );
           if (Array.isArray(response.data)) {
             setRemoteData(response.data);
+            await clearCache("remoteData");
             await saveCache("remoteData", response.data); // Используем saveCache
           } else {
             throw new Error("Ожидается массив данных");

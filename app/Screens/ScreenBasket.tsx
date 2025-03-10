@@ -17,7 +17,7 @@ import ModalContent from "../components/ModalContent";
 import EmptyBasket from "../components/EmptyBasket";
 import styles from "../styles/screenBasketStyles";
 import base64 from "base-64";
-import { loadData, saveCache, loadCache } from "../../utils/storage";
+import { loadData, saveCache, loadCache, clearCache} from "../../utils/storage";
 import NetInfo from "@react-native-community/netinfo";
 
 interface Folder {
@@ -103,6 +103,7 @@ function ScreenBasket({ theme }: { theme: string }) {
         }));
 
         setData(groupsData);
+        await clearCache("goodsData");
         await saveCache("goodsData", groupsData);
       }
     } catch (error) {
