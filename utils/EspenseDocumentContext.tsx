@@ -3,8 +3,7 @@ import axios from "axios";
 import base64 from "base-64";
 import { Alert } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
-import { loadData, saveCache, loadCache, clearCache, getTotalCacheSize } from "./storage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { loadData, saveCache, loadCache, clearCache } from "./storage";
 
 export interface RemoteData {
   GUID: string;
@@ -74,17 +73,7 @@ export const EspenseDocumentProvider: React.FC<{ children: React.ReactNode }> = 
           );
           if (Array.isArray(response.data)) {
             setRemoteData(response.data);
-
-            const totalSizeMB = (await getTotalCacheSize()) / 1024 / 1024;
-            console.log("Total storage usage:", isNaN(totalSizeMB) ? 0 : totalSizeMB.toFixed(2), "MB");
-            const dataString = JSON.stringify(response.data);
-            console.log("Реальный размер данных:", dataString.length / 1024 / 1024, "MB");
-
-            const allKeys = await AsyncStorage.getAllKeys();
-            console.log("Все ключи в хранилище:", allKeys);
-            
-            //await clearCache("remoteDataReceiptDocument");
-            await clearCache("remoteDataEspenseDocument");
+            await clearCache("remoteDataEspenseDocument"); // очистка предыдущего кэша (при необходимости)
             await saveCache("remoteDataEspenseDocument", response.data);
           } else {
             throw new Error("Ожидается массив данных");

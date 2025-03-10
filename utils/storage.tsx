@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
 
 // Для чувствительных данных (авторизация)
 export const storeData = async (key: string, value: any) => {
@@ -29,13 +29,16 @@ export const removeData = async (key: string) => {
   }
 };
 
-// Для кэширования данных приложения
+// Для кэширования данных приложения с использованием expo-file-system
 export const saveCache = async (key: string, value: any) => {
   try {
     if (Platform.OS === 'web') {
       localStorage.setItem(key, JSON.stringify(value));
     } else {
-      await AsyncStorage.setItem(key, JSON.stringify(value));
+      const path = `${FileSystem.documentDirectory}${key}.json`;
+      await FileSystem.writeAsStringAsync(path, JSON.stringify(value), {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
     }
   } catch (e) {
     console.log('Ошибка сохранения кэша:', e, key);
@@ -48,8 +51,15 @@ export const loadCache = async (key: string) => {
       const stored = localStorage.getItem(key);
       return stored ? JSON.parse(stored) : null;
     } else {
-      const stored = await AsyncStorage.getItem(key);
-      return stored ? JSON.parse(stored) : null;
+      const path = `${FileSystem.documentDirectory}${key}.json`;
+      const fileInfo = await FileSystem.getInfoAsync(path);
+      if (!fileInfo.exists) {
+        return null;
+      }
+      const stored = await FileSystem.readAsStringAsync(path, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      return JSON.parse(stored);
     }
   } catch (e) {
     console.log('Ошибка при загрузке кэша:', e);
@@ -62,32 +72,13 @@ export const clearCache = async (key: string) => {
     if (Platform.OS === 'web') {
       localStorage.removeItem(key);
     } else {
-      await AsyncStorage.removeItem(key);
-    }
-  } catch (e) {
-    console.log('Ошибка при очистке кэша::', e);
-  }
-};
-
-export const getTotalCacheSize = async (): Promise<number> => {
-  try {
-    if (Platform.OS === 'web') return 0;
-    
-    const allKeys = await AsyncStorage.getAllKeys();
-    let total = 0;
-    
-    for (const key of allKeys) {
-      try {
-        const value = await AsyncStorage.getItem(key);
-        total += value?.length || 0;
-      } catch (e) {
-        console.error(`Error reading key ${key}:`, e);
+      const path = `${FileSystem.documentDirectory}${key}.json`;
+      const fileInfo = await FileSystem.getInfoAsync(path);
+      if (fileInfo.exists) {
+        await FileSystem.deleteAsync(path);
       }
     }
-    
-    return total;
-  } catch (error) {
-    console.error('Error calculating total cache size:', error);
-    return 0;
+  } catch (e) {
+    console.log('Ошибка при очистке кэша:', e);
   }
 };
