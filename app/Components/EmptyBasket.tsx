@@ -14,10 +14,7 @@ const EmptyBasket: React.FC<EmptyBasketProps> = ({ theme }) => {
       ]}
     >
       <Text
-        style={[
-          styles.text,
-          { color: theme === "dark" ? "#FFF" : "#999" },
-        ]}
+        style={[styles.text, { color: theme === "dark" ? "#FFF" : "#999" }]}
       >
         Корзина пуста
       </Text>

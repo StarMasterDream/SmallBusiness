@@ -1,20 +1,25 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { 
-  FlatList, 
-  RefreshControl, 
-  TextInput, 
-  View, 
+import {
+  FlatList,
+  RefreshControl,
+  TextInput,
+  View,
   StyleSheet,
   Text,
-  Alert
+  Alert,
 } from "react-native";
 import axios from "axios";
 import ListItem from "../components/ListItem";
 import LoadingView from "../components/LoadingView";
 import ErrorView from "../components/ErrorView";
 import { RemoteData } from "../../utils/types";
-import base64 from 'base-64';
-import { loadData, removeData, saveCache, loadCache, clearCache } from '../../utils/storage';
+import base64 from "base-64";
+import {
+  loadData,
+  saveCache,
+  loadCache,
+  clearCache,
+} from "../../utils/storage";
 import { useRouter } from "expo-router";
 import NetInfo from "@react-native-community/netinfo";
 
@@ -29,9 +34,9 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
 
   const filteredData = useMemo(() => {
     if (!searchQuery) return remoteData;
-    
+
     const lowerQuery = searchQuery.toLowerCase();
-    return remoteData.filter(item => {
+    return remoteData.filter((item) => {
       return Object.entries(item).some(([key, value]) => {
         if (value === null || value === undefined) return false;
         return String(value).toLowerCase().includes(lowerQuery);
@@ -46,17 +51,20 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
       const netState = await NetInfo.fetch();
       if (!netState.isConnected) {
         setIsOffline(true);
-        let cachedData = await loadCache("remoteData"); // Используем loadCache
+        let cachedData = await loadCache("remoteData");
         if (!cachedData) {
           cachedData = [];
         }
         setRemoteData(cachedData);
-        Alert.alert("⚠️Оффлайн режим⚠️", "Отсутствует интернет. Используются кэшированные данные.");
+        Alert.alert(
+          "⚠️Оффлайн режим⚠️",
+          "Отсутствует интернет. Используются кэшированные данные."
+        );
       } else {
         setIsOffline(false);
-        const userData = await loadData('user');
+        const userData = await loadData("user");
         if (!userData) {
-          router.replace('/(authorization)/login');
+          router.replace("/(authorization)/login");
           return;
         }
         const authString = `${userData.email}:${userData.password}`;
@@ -67,28 +75,31 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
             "https://desktop-mitlv5m.starmasterdream.keenetic.link/1C/hs/trade/ReceiptOfGoods",
             {
               headers: { Authorization: encoded },
-              timeout: 10000
+              timeout: 10000,
             }
           );
           if (Array.isArray(response.data)) {
             setRemoteData(response.data);
             await clearCache("remoteData");
-            await saveCache("remoteData", response.data); // Используем saveCache
+            await saveCache("remoteData", response.data);
           } else {
             throw new Error("Ожидается массив данных");
           }
         } catch (serverErr: any) {
-          let cachedData = await loadCache("remoteData"); // Используем loadCache
+          let cachedData = await loadCache("remoteData");
           if (!cachedData) {
             cachedData = [];
           }
           setRemoteData(cachedData);
           setIsOffline(true);
-          Alert.alert("⚠️Оффлайн режим⚠️", "Нет доступа к серверу. Используются кэшированные данные.");
+          Alert.alert(
+            "⚠️Оффлайн режим⚠️",
+            "Нет доступа к серверу. Используются кэшированные данные."
+          );
         }
       }
     } catch (err: any) {
-      // ... обработка ошибок
+      setError(err.message);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -97,8 +108,7 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
 
   useEffect(() => {
     fetchData();
-    // Подписка на изменения статуса подключения
-    const unsubscribe = NetInfo.addEventListener(state => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
       setIsOffline(!state.isConnected);
     });
     return () => unsubscribe();
@@ -110,10 +120,16 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
   };
 
   if (loading && remoteData.length === 0) return <LoadingView theme={theme} />;
-  if (error && remoteData.length === 0) return <ErrorView error={error} theme={theme} onRetry={fetchData} />;
+  if (error && remoteData.length === 0)
+    return <ErrorView error={error} theme={theme} onRetry={fetchData} />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+      }}
+    >
       {isOffline && (
         <View style={styles.offlineBanner}>
           <Text style={styles.offlineBannerText}>Оффлайн режим</Text>
@@ -127,8 +143,8 @@ const ScreenCheque = ({ theme }: { theme: string }) => {
           {
             backgroundColor: theme === "dark" ? "#2C2C2C" : "#FFF",
             color: theme === "dark" ? "#FFF" : "#000",
-            borderColor: theme === "dark" ? "#444" : "#CCC"
-          }
+            borderColor: theme === "dark" ? "#444" : "#CCC",
+          },
         ]}
         value={searchQuery}
         onChangeText={setSearchQuery}

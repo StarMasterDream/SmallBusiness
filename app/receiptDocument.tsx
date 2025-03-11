@@ -8,6 +8,7 @@ import {
   Text,
 } from "react-native";
 import { useRouter } from "expo-router";
+
 import { useTheme } from "./theme-context";
 import ListItem from "./components/ListItemReceiptDocument";
 import LoadingView from "./components/LoadingView";
@@ -17,7 +18,9 @@ import { ReceiptDocumentContext } from "../utils/ReceiptDocumentContext";
 const ReceiptDocumentScreen = () => {
   const { theme } = useTheme();
   const router = useRouter();
-  const { remoteData, loading, error, refreshData, isOffline } = useContext(ReceiptDocumentContext);
+  const { remoteData, loading, error, refreshData, isOffline } = useContext(
+    ReceiptDocumentContext
+  );
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -43,7 +46,12 @@ const ReceiptDocumentScreen = () => {
     return <ErrorView error={error} theme={theme} onRetry={refreshData} />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+      }}
+    >
       {isOffline && (
         <View style={styles.offlineBanner}>
           <Text style={styles.offlineBannerText}>Оффлайн режим</Text>

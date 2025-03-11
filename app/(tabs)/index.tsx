@@ -1,27 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Platform, StatusBar, View, ActivityIndicator, Text } from "react-native";
+import {
+  StyleSheet,
+  Platform,
+  StatusBar,
+  View,
+  ActivityIndicator,
+  Text,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 
 import { useTheme } from "../theme-context";
 import ScreenCheque from "../screens/ScreenCheque";
 import ScreenBasket from "../screens/ScreenBasket";
 import { useProfile } from "../components/profile-context";
-import { loadData, removeData } from '../../utils/storage';
-
-
-// Условная загрузка данных
-//const loadData = async (key: string) => {
-//  if (Platform.OS === 'web') {
-//    const storedUser = localStorage.getItem(key);
-//    return storedUser ? JSON.parse(storedUser) : null;
-//  } else {
-//    const storedUser = await SecureStore.getItemAsync(key);
-//    return storedUser ? JSON.parse(storedUser) : null;
-//  }
-//};
+import { loadData, removeData } from "../../utils/storage";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -30,38 +24,37 @@ export default function Index() {
   const router = useRouter();
   const { setProfileData } = useProfile();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const isLightTheme = theme === "light";
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const userData = await loadData('user');
-        
+        const userData = await loadData("user");
+
         if (!userData) {
-          router.replace('../(authorization)/login');
+          router.replace("../(authorization)/login");
           return;
         }
-  
+
         const { authData } = userData;
-        
+
         if (!authData?.Authorized) {
-          throw new Error('Session expired');
+          throw new Error("Session expired");
         }
-  
+
         setProfileData(authData);
-        
       } catch (error) {
-        console.error('Auth check error:', error);
-        await removeData('user');
-        router.replace('../(authorization)/login');
+        console.error("Auth check error:", error);
+        await removeData("user");
+        router.replace("../(authorization)/login");
       } finally {
         setLoading(false);
       }
     };
-  
+
     checkAuth();
-  }, []);  
+  }, []);
 
   const statusBarStyle = isLightTheme ? "dark-content" : "light-content";
   const statusBarBackgroundColor = isLightTheme ? "#F2F2F7" : "#1C1C1E";
@@ -77,15 +70,28 @@ export default function Index() {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: statusBarBackgroundColor }]}>
-        <ActivityIndicator size="large" color={isLightTheme ? "#000" : "#fff"} />
+      <View
+        style={[
+          styles.loadingContainer,
+          { backgroundColor: statusBarBackgroundColor },
+        ]}
+      >
+        <ActivityIndicator
+          size="large"
+          color={isLightTheme ? "#000" : "#fff"}
+        />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={[styles.errorContainer, { backgroundColor: statusBarBackgroundColor }]}>
+      <View
+        style={[
+          styles.errorContainer,
+          { backgroundColor: statusBarBackgroundColor },
+        ]}
+      >
         <Text style={{ color: isLightTheme ? "#000" : "#fff", fontSize: 18 }}>
           Ошибка: {error}
         </Text>
@@ -95,8 +101,17 @@ export default function Index() {
 
   return (
     <>
-      <StatusBar barStyle={statusBarStyle} backgroundColor={statusBarBackgroundColor} />
-      <SafeAreaView style={[styles.container, { backgroundColor: statusBarBackgroundColor }]} edges={["top", "left", "right"]}>
+      <StatusBar
+        barStyle={statusBarStyle}
+        backgroundColor={statusBarBackgroundColor}
+      />
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: statusBarBackgroundColor },
+        ]}
+        edges={["top", "left", "right"]}
+      >
         <Tab.Navigator screenOptions={tabStyles}>
           <Tab.Screen name="Корзина">
             {() => <ScreenBasket theme={theme} />}

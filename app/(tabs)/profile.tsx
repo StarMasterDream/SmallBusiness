@@ -1,21 +1,30 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as SecureStore from 'expo-secure-store';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTheme } from '../theme-context';
-import { useProfile } from '../components/profile-context';
-import { loadData, removeData } from '../../utils/storage';
+import { SafeAreaView } from "react-native-safe-area-context";
+
+
+import { useTheme } from "../theme-context";
+import { useProfile } from "../components/profile-context";
+import { removeData } from "../../utils/storage";
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const { profileData, clearProfile } = useProfile();
 
-  const isLightTheme = theme === 'light';
-  const statusBarStyle = isLightTheme ? 'dark-content' : 'light-content';
-  const statusBarBackgroundColor = isLightTheme ? '#F2F2F7' : '#1C1C1E';
+  const isLightTheme = theme === "light";
+  const statusBarStyle = isLightTheme ? "dark-content" : "light-content";
+  const statusBarBackgroundColor = isLightTheme ? "#F2F2F7" : "#1C1C1E";
 
   return (
     <>
@@ -24,47 +33,86 @@ export default function ProfileScreen() {
         backgroundColor={statusBarBackgroundColor}
       />
 
-      <SafeAreaView style={[styles.container, { backgroundColor: statusBarBackgroundColor }]}>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: statusBarBackgroundColor },
+        ]}
+      >
         <ScrollView>
-          <View style={[styles.profileHeader, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
+          <View
+            style={[
+              styles.profileHeader,
+              { backgroundColor: isLightTheme ? "#FFF" : "#2C2C2E" },
+            ]}
+          >
             <Image
-              source={require('../../assets/images/adaptive-icon.png')}
+              source={require("../../assets/images/adaptive-icon.png")}
               style={styles.profileImage}
             />
-            <Text style={[styles.name, { color: isLightTheme ? '#000' : '#FFF' }]}>
+            <Text
+              style={[styles.name, { color: isLightTheme ? "#000" : "#FFF" }]}
+            >
               {profileData?.User || "Гость"}
             </Text>
             <TouchableOpacity
               style={styles.photoButton}
               onPress={async () => {
-              try {
-              await removeData("user");
-                clearProfile();
-                router.replace("../(authorization)/login");
-              } catch (error) {
-                console.error("Ошибка при выходе:", error);
-              }
+                try {
+                  await removeData("user");
+                  clearProfile();
+                  router.replace("../(authorization)/login");
+                } catch (error) {
+                  console.error("Ошибка при выходе:", error);
+                }
               }}
-              >
-  <Text style={[styles.exitButtonText, { color: "red" }]}>Выйти</Text>
-  <Ionicons name="exit-outline" size={16} color="red" />
-</TouchableOpacity>
+            >
+              <Text style={[styles.exitButtonText, { color: "red" }]}>
+                Выйти
+              </Text>
+              <Ionicons name="exit-outline" size={16} color="red" />
+            </TouchableOpacity>
           </View>
 
-          <View style={[styles.settingsSection, { backgroundColor: isLightTheme ? '#FFF' : '#2C2C2E' }]}>
+          <View
+            style={[
+              styles.settingsSection,
+              { backgroundColor: isLightTheme ? "#FFF" : "#2C2C2E" },
+            ]}
+          >
             <TouchableOpacity
-              style={[styles.menuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
+              style={[
+                styles.menuItem,
+                { borderBottomColor: isLightTheme ? "#E5E5EA" : "#555" },
+              ]}
               onPress={() => router.push("/settingsProfile")}
             >
               <Ionicons name="person-outline" size={24} color="#FF2D55" />
-              <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Мой профиль</Text>
+              <Text
+                style={[
+                  styles.menuText,
+                  { color: isLightTheme ? "#000" : "#FFF" },
+                ]}
+              >
+                Мой профиль
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.lastMenuItem, { borderBottomColor: isLightTheme ? '#E5E5EA' : '#555' }]}
+              style={[
+                styles.lastMenuItem,
+                { borderBottomColor: isLightTheme ? "#E5E5EA" : "#555" },
+              ]}
               onPress={() => router.push("/settings")}
             >
               <Ionicons name="settings-outline" size={24} color="#FF9500" />
-              <Text style={[styles.menuText, { color: isLightTheme ? '#000' : '#FFF' }]}>Настройки</Text>
+              <Text
+                style={[
+                  styles.menuText,
+                  { color: isLightTheme ? "#000" : "#FFF" },
+                ]}
+              >
+                Настройки
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -78,7 +126,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   profileHeader: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
     marginBottom: 10,
     paddingHorizontal: 15,
@@ -91,12 +139,12 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   photoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   exitButtonText: {
     margin: 10,
@@ -107,8 +155,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
@@ -119,8 +167,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   lastMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 0,

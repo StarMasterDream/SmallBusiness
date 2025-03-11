@@ -1,17 +1,13 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  // Основные контейнеры
   modalContainer: {
     flex: 1,
-    //padding: 16,
     backgroundColor: "#FFFFFF",
   },
   modalBackgroundDark: {
     backgroundColor: "#1E1E1E",
   },
-
-  // Заголовки и текст
   DataTitle: {
     fontSize: 20,
     fontWeight: "bold" as const,
@@ -20,8 +16,6 @@ const styles = StyleSheet.create({
   DataTitleDark: {
     color: "#FFF",
   },
-
-  // Кнопки
   backBatoon: {
     marginTop: 16,
     paddingVertical: 10,
@@ -49,8 +43,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold" as const,
   },
-
-  // Поле поиска
   searchInput: {
     height: 50,
     borderWidth: 1,
@@ -67,8 +59,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#2C2C2C",
     color: "#FFF",
   },
-
-  // Элементы списка
   textItemFolder: {
     fontSize: 16,
     margin: 12,
@@ -93,8 +83,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#2C2C2C",
     color: "#FFF",
   },
-
-  // Новые стили из доработки
   folderItem: {
     fontSize: 16,
     fontWeight: "bold" as const,

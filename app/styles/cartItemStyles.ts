@@ -9,7 +9,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     backgroundColor: "#FFFFFF",
     borderRadius: 8,
-    // Условно используем boxShadow для веба
     ...(Platform.OS === 'web' 
       ? { 
           boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" 

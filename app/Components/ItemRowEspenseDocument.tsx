@@ -18,7 +18,7 @@ const ItemRow: React.FC<ItemRowProps> = ({
     <Text
       style={[
         styles.label,
-        { color: theme === "dark" ? "#FFFFFF" : "#000000" }
+        { color: theme === "dark" ? "#FFFFFF" : "#000000" },
       ]}
     >
       {label}:
@@ -26,7 +26,7 @@ const ItemRow: React.FC<ItemRowProps> = ({
     <Text
       style={[
         styles.value,
-        { color: theme === "dark" ? "#CCCCCC" : "#333333" }
+        { color: theme === "dark" ? "#CCCCCC" : "#333333" },
       ]}
       numberOfLines={showAllRows ? 0 : 1}
       ellipsizeMode="tail"

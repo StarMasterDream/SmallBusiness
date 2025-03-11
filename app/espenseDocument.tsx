@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
-import { useRouter } from "expo-router";
+
 import { useTheme } from "./theme-context";
 import ListItem from "./components/ListItemEspenseDocument";
 import LoadingView from "./components/LoadingView";
@@ -16,8 +16,9 @@ import { EspenseDocumentContext } from "../utils/EspenseDocumentContext";
 
 const EspenseDocumentScreen = () => {
   const { theme } = useTheme();
-  const router = useRouter();
-  const { remoteData, loading, error, refreshData, isOffline } = useContext(EspenseDocumentContext);
+  const { remoteData, loading, error, refreshData, isOffline } = useContext(
+    EspenseDocumentContext
+  );
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -43,7 +44,12 @@ const EspenseDocumentScreen = () => {
     return <ErrorView error={error} theme={theme} onRetry={refreshData} />;
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+      }}
+    >
       {isOffline && (
         <View style={styles.offlineBanner}>
           <Text style={styles.offlineBannerText}>Оффлайн режим</Text>

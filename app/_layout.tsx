@@ -1,5 +1,5 @@
-// app_layout.tsx
 import { Stack } from "expo-router";
+
 import ThemeProvider, { useTheme } from "./theme-context";
 import { ProfileProvider } from "./components/profile-context";
 import { ReceiptDocumentProvider } from "../utils/ReceiptDocumentContext";

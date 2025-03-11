@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
-import { useRouter } from 'expo-router';
+import React, { useEffect } from "react";
+import { ActivityIndicator, View, StyleSheet } from "react-native";
+import * as SecureStore from "expo-secure-store";
+import { useRouter } from "expo-router";
 
 const Loading = () => {
   const router = useRouter();
@@ -9,15 +9,15 @@ const Loading = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await SecureStore.getItemAsync('user');
+        const user = await SecureStore.getItemAsync("user");
         if (user) {
-          router.replace('/'); // Переход на главный экран
+          router.replace("/");
         } else {
-          router.replace('./authorization/login'); // Переход на экран входа
+          router.replace("./authorization/login");
         }
       } catch (error) {
-        console.error('Error checking auth status:', error);
-        router.replace('./authorization/login');
+        console.error("Error checking auth status:", error);
+        router.replace("./authorization/login");
       }
     };
 
@@ -34,8 +34,8 @@ const Loading = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

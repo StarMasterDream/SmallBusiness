@@ -35,15 +35,17 @@ export const ProfileProvider = ({ children }: ProfileProviderProps) => {
   const clearProfile = () => setProfileData(null);
 
   return (
-    <ProfileContext.Provider value={{ 
-      profileData,
-      setProfileData: (data: ProfileData) => setProfileData(data),
-      clearProfile
-    }}>
+    <ProfileContext.Provider
+      value={{
+        profileData,
+        setProfileData: (data: ProfileData) => setProfileData(data),
+        clearProfile,
+      }}
+    >
       {children}
     </ProfileContext.Provider>
   );
-}
+};
 export default ProfileProvider;
 
 export const useProfile = () => useContext(ProfileContext);

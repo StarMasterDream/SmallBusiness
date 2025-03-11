@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import styles from "../styles/modalContentStyles";
 
@@ -29,9 +29,9 @@ interface ModalContentProps {
   addToCart: (item: Folder) => void;
   insets: { top: number; bottom: number };
   loading: boolean;
-  isOffline: boolean;           // новый проп для оффлайн-режима
-  refreshing: boolean;          // состояние обновления
-  onRefresh: () => void;        // функция обновления
+  isOffline: boolean;
+  refreshing: boolean;
+  onRefresh: () => void;
 }
 
 const ModalContent: React.FC<ModalContentProps> = ({
@@ -45,11 +45,11 @@ const ModalContent: React.FC<ModalContentProps> = ({
   loading,
   isOffline,
   refreshing,
-  onRefresh
+  onRefresh,
 }) => {
-  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [expandedFolders, setExpandedFolders] = useState<
+    Record<string, boolean>
+  >({});
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders((prev) => ({
@@ -107,10 +107,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
         }}
       >
         <Text
-          style={[
-            styles.textItem,
-            theme === "dark" && styles.textItemDark,
-          ]}
+          style={[styles.textItem, theme === "dark" && styles.textItemDark]}
         >
           {item.Name}
         </Text>
@@ -134,7 +131,6 @@ const ModalContent: React.FC<ModalContentProps> = ({
           },
         ]}
       >
-        {/* Баннер оффлайн-режима */}
         {isOffline && (
           <View style={styles.offlineBanner}>
             <Text style={styles.offlineBannerText}>Оффлайн режим</Text>
@@ -142,10 +138,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
         )}
 
         <TextInput
-          style={[
-            styles.searchInput,
-            theme === "dark" && styles.inputDark,
-          ]}
+          style={[styles.searchInput, theme === "dark" && styles.inputDark]}
           placeholder="Поиск..."
           placeholderTextColor={theme === "dark" ? "#ccc" : "#888"}
           value={searchQuery}

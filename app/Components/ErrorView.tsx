@@ -8,7 +8,14 @@ interface ErrorViewProps {
 }
 
 const ErrorView: React.FC<ErrorViewProps> = ({ error, theme, onRetry }) => (
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF" }}>
+  <View
+    style={{
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme === "dark" ? "#1E1E1E" : "#FFFFFF",
+    }}
+  >
     <Text style={{ color: "red" }}>{error}</Text>
     <Button title="Повторить" onPress={onRetry} />
   </View>

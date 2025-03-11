@@ -7,24 +7,24 @@ interface CartItemProps {
     item: string;
     quantity: number;
     expanded: boolean;
-    price?: number; // Добавим опциональное поле price
+    price?: number;
   };
   theme: string;
   toggleText: (item: string) => void;
   updateQuantity: (item: string, change: number) => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ item, theme, toggleText, updateQuantity }) => {
+const CartItem: React.FC<CartItemProps> = ({
+  item,
+  theme,
+  toggleText,
+  updateQuantity,
+}) => {
   const totalPrice = item.price ? item.price * item.quantity : 0;
 
   return (
-    <View
-      style={[
-        styles.cartItem,
-        theme === "dark" && styles.cartItemDark,
-      ]}
-    >
-      <TouchableOpacity // Добавим обработчик нажатия на элемент корзины
+    <View style={[styles.cartItem, theme === "dark" && styles.cartItemDark]}>
+      <TouchableOpacity
         style={styles.textContainer}
         onPress={() => toggleText(item.item)}
       >

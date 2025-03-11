@@ -73,7 +73,6 @@ export const ReceiptDocumentProvider: React.FC<{ children: React.ReactNode }> = 
           );
           if (Array.isArray(response.data)) {
             setRemoteData(response.data);
-            //await clearCache("remoteDataEspenseDocument");
             await clearCache("remoteDataReceiptDocument");
             await saveCache("remoteDataReceiptDocument", response.data);
           } else {
